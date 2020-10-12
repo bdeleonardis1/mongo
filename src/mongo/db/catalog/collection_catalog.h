@@ -111,7 +111,7 @@ public:
         OperationContext* _opCtx;
         std::string _dbName;
         boost::optional<CollectionUUID> _uuid;
-        uint64_t _genNum;
+        uint64_t _genNum = 0;
         std::map<std::pair<std::string, CollectionUUID>,
                  std::shared_ptr<Collection>>::const_iterator _mapIter;
         const CollectionCatalog* _catalog;
