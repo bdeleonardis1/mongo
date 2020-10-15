@@ -202,6 +202,7 @@ class TestRunner(Subcommand):  # pylint: disable=too-many-instance-attributes
     def _run_suite(self, suite):
         """Run a test suite."""
         self._log_suite_config(suite)
+        
         suite.record_suite_start()
         interrupted = self._execute_suite(suite)
         suite.record_suite_end()
@@ -266,6 +267,7 @@ class TestRunner(Subcommand):  # pylint: disable=too-many-instance-attributes
             self.exit(1)
 
     def _log_suite_config(self, suite):
+        print("Logging suite configs:")
         sb = [
             "YAML configuration of suite {}".format(suite.get_display_name()),
             utils.dump_yaml({"test_kind": suite.get_test_kind_config()}), "",
