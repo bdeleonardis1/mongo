@@ -1955,7 +1955,7 @@ functions:
           - key: aws_secret_remote
             value: ${mongodatafiles_aws_secret}
     - *set_up_remote_credentials
-    - *execute_resmoke_tests
+    - *execute_fuzzed_tests
       # The existence of the "run_tests_infrastructure_failure" file indicates this failure isn't
       # directly actionable. We use type=setup rather than type=system or type=test for this command
       # because we don't intend for any human to look at this failure.
@@ -8795,7 +8795,7 @@ tasks:
     name: fuzzed_test
     commands:
       - func: "do setup"
-      - func: "run tests"
+      - func: "run fuzzed tests"
 
   - <<: *task_template
     name: search_auth
