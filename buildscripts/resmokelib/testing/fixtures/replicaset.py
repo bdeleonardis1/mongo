@@ -36,6 +36,9 @@ class ReplicaSetFixture(interface.ReplFixture):  # pylint: disable=too-many-inst
             shard_logging_prefix=None, replicaset_logging_prefix=None):
         """Initialize ReplicaSetFixture."""
 
+        print("REPLICASET")
+
+
         interface.ReplFixture.__init__(self, logger, job_num, dbpath_prefix=dbpath_prefix)
 
         self.mongod_options = utils.default_if_none(mongod_options, {})
@@ -599,6 +602,7 @@ class ReplicaSetFixture(interface.ReplFixture):  # pylint: disable=too-many-inst
         mongod_options["dbpath"] = os.path.join(self._dbpath_prefix, "node{}".format(index))
         mongod_options["set_parameters"] = mongod_options.get("set_parameters", {}).copy()
 
+        print("Above standalone")
         return standalone.MongoDFixture(
             mongod_logger, self.job_num, mongod_executable=mongod_executable,
             mongod_options=mongod_options, preserve_dbpath=self.preserve_dbpath)

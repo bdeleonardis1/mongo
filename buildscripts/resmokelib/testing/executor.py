@@ -33,6 +33,8 @@ class TestSuiteExecutor(object):  # pylint: disable=too-many-instance-attributes
         """Initialize the TestSuiteExecutor with the test suite to run."""
         self.logger = exec_logger
 
+        print("TestSuiteExecutor fixture:", fixture)
+
         if _config.SHELL_CONN_STRING is not None:
             # Specifying the shellConnString command line option should override the fixture
             # specified in the YAML configuration to be the external fixture.
@@ -40,7 +42,9 @@ class TestSuiteExecutor(object):  # pylint: disable=too-many-instance-attributes
                 "class": fixtures.EXTERNAL_FIXTURE_CLASS,
                 "shell_conn_string": _config.SHELL_CONN_STRING
             }
+            print("In dat if")
         else:
+            print("In dat else")
             self.fixture_config = fixture
 
         self.hooks_config = utils.default_if_none(hooks, [])

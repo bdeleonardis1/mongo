@@ -37,6 +37,7 @@ def make_fixture(class_name, *args, **kwargs):
 
     if class_name not in _FIXTURES:
         raise ValueError("Unknown fixture class '%s'" % class_name)
+    print("This where we are making the STANDALONE")
     return _FIXTURES[class_name](*args, **kwargs)
 
 

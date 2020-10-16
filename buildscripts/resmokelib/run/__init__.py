@@ -230,6 +230,7 @@ class TestRunner(Subcommand):  # pylint: disable=too-many-instance-attributes
             return False
         executor_config = suite.get_executor_config()
         try:
+            print("executor_config", executor_config)
             executor = testing.executor.TestSuiteExecutor(
                 self._exec_logger, suite, archive_instance=self._archive, **executor_config)
             executor.run()
@@ -267,7 +268,6 @@ class TestRunner(Subcommand):  # pylint: disable=too-many-instance-attributes
             self.exit(1)
 
     def _log_suite_config(self, suite):
-        print("Logging suite configs:")
         sb = [
             "YAML configuration of suite {}".format(suite.get_display_name()),
             utils.dump_yaml({"test_kind": suite.get_test_kind_config()}), "",
@@ -631,6 +631,10 @@ class RunPlugin(PluginInterface):
             help=("Comma separated list of tags. Any jstest that contains any of the"
                   " specified tags will be excluded from any suites that are run."
                   " The tag '{}' is implicitly part of this list.".format(config.EXCLUDED_TAG)))
+
+        parser.add_argument(
+            "--fuzz", action='store_true', dest="fuzz", help=("Will randomly choose wiredtiger configurations")
+        )
 
         parser.add_argument("--genny", dest="genny_executable", metavar="PATH",
                             help="The path to the genny executable for resmoke to use.")

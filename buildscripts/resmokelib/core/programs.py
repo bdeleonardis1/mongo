@@ -125,6 +125,7 @@ def mongod_program(  # pylint: disable=too-many-branches,too-many-statements
     suite_set_parameters = kwargs.pop("set_parameters", {})
 
     if config.MONGOD_SET_PARAMETERS is not None:
+        print("config.MONGOD_SET_PARAMETERS", config.MONGOD_SET_PARAMETERS)
         suite_set_parameters.update(utils.load_yaml(config.MONGOD_SET_PARAMETERS))
 
     # Set default log verbosity levels if none were specified.

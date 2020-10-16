@@ -1,0 +1,211 @@
+Original set parameters: {}
+new set parameters: {"enableTestCommands": 1}
+[resmoke] 2020-10-16T02:07:57.970+0000 verbatim resmoke.py invocation: buildscripts/resmoke.py run -j1 --fuzz --suites=fuzzed
+[resmoke] 2020-10-16T02:07:57.974+0000 YAML configuration of suite fuzzed
+test_kind: js_test
+
+selector:
+  roots:
+  - jstests/fuzzed/*.js
+
+executor:
+  fixture:
+    class: MongoDFixture
+    mongod_options:
+      set_parameters:
+        enableTestCommands: 1
+
+logging:
+  executor:
+    format: '[%(name)s] %(asctime)s %(message)s'
+    handlers:
+    - class: logging.StreamHandler
+  fixture:
+    format: '[%(name)s] %(message)s'
+    handlers:
+    - class: logging.StreamHandler
+  tests:
+    format: '[%(name)s] %(asctime)s %(message)s'
+    handlers:
+    - class: logging.StreamHandler
+executor_config {'fixture': {'class': 'MongoDFixture', 'mongod_options': {'set_parameters': {'enableTestCommands': 1}}}}
+TestSuiteExecutor fixture: {'class': 'MongoDFixture', 'mongod_options': {'set_parameters': {'enableTestCommands': 1}}}
+In dat else
+This where we are making the STANDALONE
+STANDALONE
+MONGOD_OPTIONS: {'set_parameters': {'enableTestCommands': 1}}
+[executor] 2020-10-16T02:07:57.974+0000 Starting execution of js_tests...
+[executor:js_test:job0] 2020-10-16T02:07:57.975+0000 Running job0_fixture_setup_0...
+[js_test:job0_fixture_setup_0] 2020-10-16T02:07:57.975+0000 Starting the setup of MongoDFixture (Job #0).
+self.mongod_options: {'set_parameters': {'enableTestCommands': 1}, 'dbpath': '/data/db/job0/resmoke', 'port': 20000}
+config.MONGOD_SET_PARAMETERS {"enableTestCommands": 1}
+[MongoDFixture:job0] Starting mongod on port 20000...
+PATH=/home/ubuntu/mongo:/data/multiversion:/home/ubuntu/mongo/build/install/bin:/home/ubuntu/mongo/python3-venv/bin:/opt/undodb5/bin:/opt/cmake/bin:/opt/rtags-2.38/bin:/opt/mongodbtoolchain/gdb/bin:/opt/go/bin:/opt/go/bin:/opt/undodb5/bin:/opt/cmake/bin:/opt/rtags-2.38/bin:/opt/mongodbtoolchain/gdb/bin:/opt/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/opt/node/bin:/opt/node/bin:/home/ubuntu/cli_bin:/opt/node/bin INSTALL_DIR=/home/ubuntu/mongo/build/install/bin /home/ubuntu/mongo/build/install/bin/mongod --setParameter enableTestCommands=1 --setParameter logComponentVerbosity={'replication': {'rollback': 2}, 'sharding': {'migration': 2}, 'transaction': 4, 'tenantMigration': 4} --setParameter disableLogicalSessionCacheRefresh=true --setParameter coordinateCommitReturnImmediatelyAfterPersistingDecision=false --setParameter transactionLifetimeLimitSeconds=86400 --setParameter maxIndexBuildDrainBatchSize=10 --setParameter testingDiagnosticsEnabled=true --dbpath=/data/db/job0/resmoke --port=20000 --enableMajorityReadConcern=True
+[MongoDFixture:job0] mongod started on port 20000 with pid 16892.
+[js_test:job0_fixture_setup_0] 2020-10-16T02:07:57.980+0000 Waiting for MongoDFixture (Job #0) to be ready.
+[MongoDFixture:job0] Waiting to connect to mongod on port 20000.
+[MongoDFixture:job0] Waiting to connect to mongod on port 20000.
+[MongoDFixture:job0] Waiting to connect to mongod on port 20000.
+[MongoDFixture:job0] Waiting to connect to mongod on port 20000.
+[MongoDFixture:job0] Waiting to connect to mongod on port 20000.
+[MongoDFixture:job0] Waiting to connect to mongod on port 20000.
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.054Z"},"s":"I",  "c":"CONTROL",  "id":4788402, "ctx":"main","msg":"Lock-free reads is disabled."}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.055+00:00"},"s":"I",  "c":"-",        "id":4672602, "ctx":"main","msg":"Testing behaviors are enabled. This has serious implications for both performance and security.","tags":["startupWarnings"]}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.064+00:00"},"s":"I",  "c":"NETWORK",  "id":4915701, "ctx":"main","msg":"Initialized wire specification","attr":{"spec":{"incomingExternalClient":{"minWireVersion":0,"maxWireVersion":12},"incomingInternalClient":{"minWireVersion":0,"maxWireVersion":12},"outgoing":{"minWireVersion":0,"maxWireVersion":12},"isInternalClient":true}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.087+00:00"},"s":"I",  "c":"CONTROL",  "id":23285,   "ctx":"main","msg":"Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.095+00:00"},"s":"W",  "c":"ASIO",     "id":22601,   "ctx":"main","msg":"No TransportLayer configured during NetworkInterface startup"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.095+00:00"},"s":"I",  "c":"NETWORK",  "id":4648602, "ctx":"main","msg":"Implicit TCP FastOpen in use."}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.096+00:00"},"s":"I",  "c":"REPL",     "id":5123008, "ctx":"main","msg":"Successfully registered PrimaryOnlyService","attr":{"service":"TenantMigrationDonorService","ns":"config.tenantMigrationDonors"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.096+00:00"},"s":"I",  "c":"REPL",     "id":5123008, "ctx":"main","msg":"Successfully registered PrimaryOnlyService","attr":{"service":"TenantMigrationRecipientService","ns":"config.tenantMigrationRecipients"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.096+00:00"},"s":"I",  "c":"REPL",     "id":5123008, "ctx":"main","msg":"Successfully registered PrimaryOnlyService","attr":{"service":"ReshardingCoordinatorService","ns":"config.reshardingOperations"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.097+00:00"},"s":"I",  "c":"CONTROL",  "id":4615611, "ctx":"initandlisten","msg":"MongoDB starting","attr":{"pid":16892,"port":20000,"dbPath":"/data/db/job0/resmoke","architecture":"64-bit","host":"ip-10-122-13-44"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.097+00:00"},"s":"I",  "c":"CONTROL",  "id":20533,   "ctx":"initandlisten","msg":"DEBUG build (which is slower)"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.097+00:00"},"s":"I",  "c":"CONTROL",  "id":23403,   "ctx":"initandlisten","msg":"Build Info","attr":{"buildInfo":{"version":"0.0.0","gitVersion":"unknown","openSSLVersion":"OpenSSL 1.1.1  11 Sep 2018","modules":[],"allocator":"tcmalloc","environment":{"distarch":"x86_64","target_arch":"x86_64"}}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.097+00:00"},"s":"I",  "c":"CONTROL",  "id":51765,   "ctx":"initandlisten","msg":"Operating System","attr":{"os":{"name":"Ubuntu","version":"18.04"}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.097+00:00"},"s":"I",  "c":"CONTROL",  "id":21951,   "ctx":"initandlisten","msg":"Options set by command line","attr":{"options":{"net":{"port":20000},"replication":{"enableMajorityReadConcern":true},"setParameter":{"coordinateCommitReturnImmediatelyAfterPersistingDecision":"false","disableLogicalSessionCacheRefresh":"true","enableTestCommands":"1","logComponentVerbosity":"{'replication': {'rollback': 2}, 'sharding': {'migration': 2}, 'transaction': 4, 'tenantMigration': 4}","maxIndexBuildDrainBatchSize":"10","testingDiagnosticsEnabled":"true","transactionLifetimeLimitSeconds":"86400"},"storage":{"dbPath":"/data/db/job0/resmoke"}}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.100+00:00"},"s":"I",  "c":"STORAGE",  "id":22297,   "ctx":"initandlisten","msg":"Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem","tags":["startupWarnings"]}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.100+00:00"},"s":"I",  "c":"STORAGE",  "id":22315,   "ctx":"initandlisten","msg":"Opening WiredTiger","attr":{"config":"create,cache_size=7263M,session_max=33000,eviction=(threads_min=4,threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000,close_scan_interval=10,close_handle_minimum=250),statistics_log=(wait=0),verbose=[recovery_progress,checkpoint_progress,compact_progress],debug_mode=(table_logging=true,),debug_mode=(checkpoint_retention=4),"}}
+[MongoDFixture:job0] Waiting to connect to mongod on port 20000.
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.684+00:00"},"s":"I",  "c":"STORAGE",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":"[1602814082:684235][16892:0x7f327b92ff80], txn-recover: [WT_VERB_RECOVERY | WT_VERB_RECOVERY_PROGRESS] Set global recovery timestamp: (0, 0)"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.684+00:00"},"s":"I",  "c":"STORAGE",  "id":22430,   "ctx":"initandlisten","msg":"WiredTiger message","attr":{"message":"[1602814082:684463][16892:0x7f327b92ff80], txn-recover: [WT_VERB_RECOVERY | WT_VERB_RECOVERY_PROGRESS] Set global oldest timestamp: (0, 0)"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.692+00:00"},"s":"I",  "c":"STORAGE",  "id":4795906, "ctx":"initandlisten","msg":"WiredTiger opened","attr":{"durationMillis":592}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.692+00:00"},"s":"I",  "c":"RECOVERY", "id":23987,   "ctx":"initandlisten","msg":"WiredTiger recoveryTimestamp","attr":{"recoveryTimestamp":{"$timestamp":{"t":0,"i":0}}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.704+00:00"},"s":"I",  "c":"STORAGE",  "id":4366408, "ctx":"initandlisten","msg":"No table logging settings modifications are required for existing WiredTiger tables","attr":{"loggingEnabled":true}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.704+00:00"},"s":"I",  "c":"STORAGE",  "id":22262,   "ctx":"initandlisten","msg":"Timestamp monitor starting"}
+[MongoDFixture:job0] Waiting to connect to mongod on port 20000.
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.709+00:00"},"s":"W",  "c":"CONTROL",  "id":22120,   "ctx":"initandlisten","msg":"Access control is not enabled for the database. Read and write access to data and configuration is unrestricted","tags":["startupWarnings"]}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.709+00:00"},"s":"W",  "c":"CONTROL",  "id":22140,   "ctx":"initandlisten","msg":"This server is bound to localhost. Remote systems will be unable to connect to this server. Start the server with --bind_ip <address> to specify which IP addresses it should serve responses from, or with --bind_ip_all to bind to all interfaces. If this behavior is desired, start the server with --bind_ip 127.0.0.1 to disable this warning","tags":["startupWarnings"]}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.711+00:00"},"s":"I",  "c":"STORAGE",  "id":20320,   "ctx":"initandlisten","msg":"createCollection","attr":{"namespace":"admin.system.version","uuidDisposition":"provided","uuid":{"uuid":{"$uuid":"34f7339b-f951-41c8-ab77-3b75b86e75c3"}},"options":{"uuid":{"$uuid":"34f7339b-f951-41c8-ab77-3b75b86e75c3"}}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.723+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"initandlisten","msg":"Index build: done building","attr":{"buildUUID":null,"namespace":"admin.system.version","index":"_id_","commitTimestamp":null}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.723+00:00"},"s":"I",  "c":"REPL",     "id":20459,   "ctx":"initandlisten","msg":"Setting featureCompatibilityVersion","attr":{"newVersion":"4.9"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.723+00:00"},"s":"I",  "c":"NETWORK",  "id":4915702, "ctx":"initandlisten","msg":"Updated wire specification","attr":{"oldSpec":{"incomingExternalClient":{"minWireVersion":0,"maxWireVersion":12},"incomingInternalClient":{"minWireVersion":0,"maxWireVersion":12},"outgoing":{"minWireVersion":0,"maxWireVersion":12},"isInternalClient":true},"newSpec":{"incomingExternalClient":{"minWireVersion":0,"maxWireVersion":12},"incomingInternalClient":{"minWireVersion":12,"maxWireVersion":12},"outgoing":{"minWireVersion":12,"maxWireVersion":12},"isInternalClient":true}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.724+00:00"},"s":"I",  "c":"NETWORK",  "id":4915702, "ctx":"initandlisten","msg":"Updated wire specification","attr":{"oldSpec":{"incomingExternalClient":{"minWireVersion":0,"maxWireVersion":12},"incomingInternalClient":{"minWireVersion":12,"maxWireVersion":12},"outgoing":{"minWireVersion":12,"maxWireVersion":12},"isInternalClient":true},"newSpec":{"incomingExternalClient":{"minWireVersion":0,"maxWireVersion":12},"incomingInternalClient":{"minWireVersion":12,"maxWireVersion":12},"outgoing":{"minWireVersion":12,"maxWireVersion":12},"isInternalClient":true}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.725+00:00"},"s":"I",  "c":"STORAGE",  "id":5071100, "ctx":"initandlisten","msg":"Clearing temp directory"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.726+00:00"},"s":"I",  "c":"CONTROL",  "id":20536,   "ctx":"initandlisten","msg":"Flow Control is enabled on this deployment"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.729+00:00"},"s":"I",  "c":"STORAGE",  "id":20320,   "ctx":"initandlisten","msg":"createCollection","attr":{"namespace":"local.startup_log","uuidDisposition":"generated","uuid":{"uuid":{"$uuid":"db0659d3-58ad-49bb-a91e-742db01e78ac"}},"options":{"capped":true,"size":10485760}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.742+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"initandlisten","msg":"Index build: done building","attr":{"buildUUID":null,"namespace":"local.startup_log","index":"_id_","commitTimestamp":null}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.743+00:00"},"s":"I",  "c":"FTDC",     "id":20625,   "ctx":"initandlisten","msg":"Initializing full-time diagnostic data capture","attr":{"dataDirectory":"/data/db/job0/resmoke/diagnostic.data"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.745+00:00"},"s":"I",  "c":"NETWORK",  "id":23015,   "ctx":"listener","msg":"Listening on","attr":{"address":"/tmp/mongodb-20000.sock"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.745+00:00"},"s":"I",  "c":"NETWORK",  "id":23015,   "ctx":"listener","msg":"Listening on","attr":{"address":"127.0.0.1"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.745+00:00"},"s":"I",  "c":"NETWORK",  "id":23016,   "ctx":"listener","msg":"Waiting for connections","attr":{"port":20000,"ssl":"off"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.808+00:00"},"s":"I",  "c":"NETWORK",  "id":22943,   "ctx":"listener","msg":"Connection accepted","attr":{"remote":"127.0.0.1:49806","connectionId":1,"connectionCount":1}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.809+00:00"},"s":"I",  "c":"NETWORK",  "id":51800,   "ctx":"conn1","msg":"client metadata","attr":{"remote":"127.0.0.1:49806","client":"conn1","doc":{"driver":{"name":"PyMongo","version":"3.11.0"},"os":{"type":"Linux","name":"Linux","architecture":"x86_64","version":"5.4.0-1025-aws"},"platform":"CPython 3.7.0.final.0"}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.811+00:00"},"s":"I",  "c":"NETWORK",  "id":22943,   "ctx":"listener","msg":"Connection accepted","attr":{"remote":"127.0.0.1:49808","connectionId":2,"connectionCount":2}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.811+00:00"},"s":"I",  "c":"NETWORK",  "id":22943,   "ctx":"listener","msg":"Connection accepted","attr":{"remote":"127.0.0.1:49810","connectionId":3,"connectionCount":3}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.812+00:00"},"s":"I",  "c":"NETWORK",  "id":51800,   "ctx":"conn2","msg":"client metadata","attr":{"remote":"127.0.0.1:49808","client":"conn2","doc":{"driver":{"name":"PyMongo","version":"3.11.0"},"os":{"type":"Linux","name":"Linux","architecture":"x86_64","version":"5.4.0-1025-aws"},"platform":"CPython 3.7.0.final.0"}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.812+00:00"},"s":"I",  "c":"NETWORK",  "id":51800,   "ctx":"conn3","msg":"client metadata","attr":{"remote":"127.0.0.1:49810","client":"conn3","doc":{"driver":{"name":"PyMongo","version":"3.11.0"},"os":{"type":"Linux","name":"Linux","architecture":"x86_64","version":"5.4.0-1025-aws"},"platform":"CPython 3.7.0.final.0"}}}
+[MongoDFixture:job0] Successfully contacted the mongod on port 20000.
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.814+00:00"},"s":"I",  "c":"NETWORK",  "id":22944,   "ctx":"conn2","msg":"Connection ended","attr":{"remote":"127.0.0.1:49808","connectionId":2,"connectionCount":2}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.815+00:00"},"s":"I",  "c":"NETWORK",  "id":22943,   "ctx":"listener","msg":"Connection accepted","attr":{"remote":"127.0.0.1:49812","connectionId":4,"connectionCount":3}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.816+00:00"},"s":"I",  "c":"NETWORK",  "id":51800,   "ctx":"conn4","msg":"client metadata","attr":{"remote":"127.0.0.1:49812","client":"conn4","doc":{"driver":{"name":"PyMongo","version":"3.11.0"},"os":{"type":"Linux","name":"Linux","architecture":"x86_64","version":"5.4.0-1025-aws"},"platform":"CPython 3.7.0.final.0"}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.818+00:00"},"s":"I",  "c":"NETWORK",  "id":22943,   "ctx":"listener","msg":"Connection accepted","attr":{"remote":"127.0.0.1:49814","connectionId":5,"connectionCount":4}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.818+00:00"},"s":"I",  "c":"NETWORK",  "id":22943,   "ctx":"listener","msg":"Connection accepted","attr":{"remote":"127.0.0.1:49816","connectionId":6,"connectionCount":5}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.819+00:00"},"s":"I",  "c":"NETWORK",  "id":51800,   "ctx":"conn5","msg":"client metadata","attr":{"remote":"127.0.0.1:49814","client":"conn5","doc":{"driver":{"name":"PyMongo","version":"3.11.0"},"os":{"type":"Linux","name":"Linux","architecture":"x86_64","version":"5.4.0-1025-aws"},"platform":"CPython 3.7.0.final.0"}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.819+00:00"},"s":"I",  "c":"NETWORK",  "id":51800,   "ctx":"conn6","msg":"client metadata","attr":{"remote":"127.0.0.1:49816","client":"conn6","doc":{"driver":{"name":"PyMongo","version":"3.11.0"},"os":{"type":"Linux","name":"Linux","architecture":"x86_64","version":"5.4.0-1025-aws"},"platform":"CPython 3.7.0.final.0"}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.822+00:00"},"s":"I",  "c":"STORAGE",  "id":20320,   "ctx":"conn5","msg":"createCollection","attr":{"namespace":"config.system.sessions","uuidDisposition":"generated","uuid":{"uuid":{"$uuid":"2ca65fa2-f1ae-4f78-866d-5da265338c09"}},"options":{}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.842+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"conn5","msg":"Index build: done building","attr":{"buildUUID":null,"namespace":"config.system.sessions","index":"_id_","commitTimestamp":null}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.843+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"conn5","msg":"Index build: done building","attr":{"buildUUID":null,"namespace":"config.system.sessions","index":"lsidTTLIndex","commitTimestamp":null}}
+[js_test:job0_fixture_setup_0] 2020-10-16T02:08:02.849+0000 Finished the setup of MongoDFixture (Job #0).
+[executor:js_test:job0] 2020-10-16T02:08:02.849+0000 job0_fixture_setup_0 ran in 4.87 seconds: no failures detected.
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:02.849+00:00"},"s":"I",  "c":"NETWORK",  "id":22944,   "ctx":"conn5","msg":"Connection ended","attr":{"remote":"127.0.0.1:49814","connectionId":5,"connectionCount":4}}
+[executor:js_test:job0] 2020-10-16T02:08:02.851+0000 Running fuzzdemo.js...
+PATH=/home/ubuntu/mongo:/data/multiversion:/home/ubuntu/mongo/build/install/bin:/home/ubuntu/mongo/python3-venv/bin:/opt/undodb5/bin:/opt/cmake/bin:/opt/rtags-2.38/bin:/opt/mongodbtoolchain/gdb/bin:/opt/go/bin:/opt/go/bin:/opt/undodb5/bin:/opt/cmake/bin:/opt/rtags-2.38/bin:/opt/mongodbtoolchain/gdb/bin:/opt/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/opt/node/bin:/opt/node/bin:/home/ubuntu/cli_bin:/opt/node/bin INSTALL_DIR=/home/ubuntu/mongo/build/install/bin /home/ubuntu/mongo/build/install/bin/mongo --eval MongoRunner.dataDir = "/data/db/job0/mongorunner"; MongoRunner.dataPath = "/data/db/job0/mongorunner/"; TestData = new Object(); TestData["minPort"] = 20020; TestData["maxPort"] = 20249; TestData["peerPids"] = [16892]; TestData["alwaysUseLogFiles"] = false; TestData["failIfUnterminatedProcesses"] = true; TestData["backupOnRestartDir"] = null; TestData["enableMajorityReadConcern"] = true; TestData["mixedBinVersions"] = ""; TestData["noJournal"] = false; TestData["storageEngine"] = ""; TestData["storageEngineCacheSizeGB"] = ""; TestData["testName"] = "fuzzdemo"; TestData["transportLayer"] = ""; TestData["wiredTigerCollectionConfigString"] = ""; TestData["wiredTigerEngineConfigString"] = ""; TestData["wiredTigerIndexConfigString"] = ""; TestData["setParameters"] = new Object(); TestData["setParameters"]["enableTestCommands"] = 1; TestData["setParameters"]["logComponentVerbosity"] = new Object(); TestData["setParameters"]["logComponentVerbosity"]["replication"] = new Object(); TestData["setParameters"]["logComponentVerbosity"]["replication"]["rollback"] = 2; TestData["setParameters"]["logComponentVerbosity"]["sharding"] = new Object(); TestData["setParameters"]["logComponentVerbosity"]["sharding"]["migration"] = 2; TestData["setParameters"]["logComponentVerbosity"]["transaction"] = 4; TestData["setParameters"]["logComponentVerbosity"]["tenantMigration"] = 4; TestData["setParametersMongos"] = new Object(); TestData["setParametersMongos"]["logComponentVerbosity"] = new Object(); TestData["setParametersMongos"]["logComponentVerbosity"]["transaction"] = 3; TestData["undoRecorderPath"] = null; TestData["transactionLifetimeLimitSeconds"] = 86400; load('jstests/libs/override_methods/validate_collections_on_shutdown.js');; load('jstests/libs/override_methods/check_uuids_consistent_across_cluster.js');; load('jstests/libs/override_methods/check_indexes_consistent_across_cluster.js');; load('jstests/libs/override_methods/check_orphans_are_deleted.js');; load('jstests/libs/override_methods/implicitly_retry_on_background_op_in_progress.js');; (function() { Timestamp.prototype.toString = function() { throw new Error("Cannot toString timestamps. Consider using timestampCmp() for comparison or tojson(<variable>) for output."); } })(); mongodb://localhost:20000 jstests/fuzzed/fuzzdemo.js
+[js_test:fuzzdemo] 2020-10-16T02:08:02.851+0000 Fixture status:
++------------------+-----+-----+
+|name              |port |pid  |
++------------------+-----+-----+
+|MongoDFixture:job0|20000|16892|
++------------------+-----+-----+
+[js_test:fuzzdemo] 2020-10-16T02:08:02.852+0000 Starting JSTest jstests/fuzzed/fuzzdemo.js...
+PATH=/home/ubuntu/mongo:/data/multiversion:/home/ubuntu/mongo/build/install/bin:/home/ubuntu/mongo/python3-venv/bin:/opt/undodb5/bin:/opt/cmake/bin:/opt/rtags-2.38/bin:/opt/mongodbtoolchain/gdb/bin:/opt/go/bin:/opt/go/bin:/opt/undodb5/bin:/opt/cmake/bin:/opt/rtags-2.38/bin:/opt/mongodbtoolchain/gdb/bin:/opt/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/opt/node/bin:/opt/node/bin:/home/ubuntu/cli_bin:/opt/node/bin INSTALL_DIR=/home/ubuntu/mongo/build/install/bin /home/ubuntu/mongo/build/install/bin/mongo --eval MongoRunner.dataDir = "/data/db/job0/mongorunner"; MongoRunner.dataPath = "/data/db/job0/mongorunner/"; TestData = new Object(); TestData["minPort"] = 20020; TestData["maxPort"] = 20249; TestData["peerPids"] = [16892]; TestData["alwaysUseLogFiles"] = false; TestData["failIfUnterminatedProcesses"] = true; TestData["isMainTest"] = true; TestData["numTestClients"] = 1; TestData["backupOnRestartDir"] = null; TestData["enableMajorityReadConcern"] = true; TestData["mixedBinVersions"] = ""; TestData["noJournal"] = false; TestData["storageEngine"] = ""; TestData["storageEngineCacheSizeGB"] = ""; TestData["testName"] = "fuzzdemo"; TestData["transportLayer"] = ""; TestData["wiredTigerCollectionConfigString"] = ""; TestData["wiredTigerEngineConfigString"] = ""; TestData["wiredTigerIndexConfigString"] = ""; TestData["setParameters"] = new Object(); TestData["setParameters"]["enableTestCommands"] = 1; TestData["setParameters"]["logComponentVerbosity"] = new Object(); TestData["setParameters"]["logComponentVerbosity"]["replication"] = new Object(); TestData["setParameters"]["logComponentVerbosity"]["replication"]["rollback"] = 2; TestData["setParameters"]["logComponentVerbosity"]["sharding"] = new Object(); TestData["setParameters"]["logComponentVerbosity"]["sharding"]["migration"] = 2; TestData["setParameters"]["logComponentVerbosity"]["transaction"] = 4; TestData["setParameters"]["logComponentVerbosity"]["tenantMigration"] = 4; TestData["setParametersMongos"] = new Object(); TestData["setParametersMongos"]["logComponentVerbosity"] = new Object(); TestData["setParametersMongos"]["logComponentVerbosity"]["transaction"] = 3; TestData["undoRecorderPath"] = null; TestData["transactionLifetimeLimitSeconds"] = 86400; load('jstests/libs/override_methods/validate_collections_on_shutdown.js');; load('jstests/libs/override_methods/check_uuids_consistent_across_cluster.js');; load('jstests/libs/override_methods/check_indexes_consistent_across_cluster.js');; load('jstests/libs/override_methods/check_orphans_are_deleted.js');; load('jstests/libs/override_methods/implicitly_retry_on_background_op_in_progress.js');; (function() { Timestamp.prototype.toString = function() { throw new Error("Cannot toString timestamps. Consider using timestampCmp() for comparison or tojson(<variable>) for output."); } })(); mongodb://localhost:20000 jstests/fuzzed/fuzzdemo.js
+[js_test:fuzzdemo] 2020-10-16T02:08:02.855+0000 JSTest jstests/fuzzed/fuzzdemo.js started with pid 16954.
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:03.311+00:00"},"s":"I",  "c":"-",        "id":20883,   "ctx":"conn1","msg":"Interrupted operation as its client disconnected","attr":{"opId":12}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:03.313+00:00"},"s":"I",  "c":"NETWORK",  "id":22944,   "ctx":"conn1","msg":"Connection ended","attr":{"remote":"127.0.0.1:49806","connectionId":1,"connectionCount":3}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:03.318+00:00"},"s":"I",  "c":"-",        "id":20883,   "ctx":"conn4","msg":"Interrupted operation as its client disconnected","attr":{"opId":18}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:03.319+00:00"},"s":"I",  "c":"NETWORK",  "id":22944,   "ctx":"conn4","msg":"Connection ended","attr":{"remote":"127.0.0.1:49812","connectionId":4,"connectionCount":2}}
+[js_test:fuzzdemo] 2020-10-16T02:08:03.525+0000 MongoDB shell version v0.0.0
+[js_test:fuzzdemo] 2020-10-16T02:08:03.963+0000 connecting to: mongodb://localhost:20000/?compressors=disabled&gssapiServiceName=mongodb
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:03.965+00:00"},"s":"I",  "c":"NETWORK",  "id":22943,   "ctx":"listener","msg":"Connection accepted","attr":{"remote":"127.0.0.1:49818","connectionId":7,"connectionCount":3}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:03.966+00:00"},"s":"I",  "c":"NETWORK",  "id":51800,   "ctx":"conn7","msg":"client metadata","attr":{"remote":"127.0.0.1:49818","client":"conn7","doc":{"application":{"name":"MongoDB Shell","pid":"16954"},"driver":{"name":"MongoDB Internal Client","version":"0.0.0"},"os":{"type":"Linux","name":"Ubuntu","architecture":"x86_64","version":"18.04"}}}}
+[js_test:fuzzdemo] 2020-10-16T02:08:03.981+0000 Implicit session: session { "id" : UUID("24a08707-25b5-4bf3-8181-5808a06fc264") }
+[js_test:fuzzdemo] 2020-10-16T02:08:03.996+0000 MongoDB server version: 0.0.0
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.024+00:00"},"s":"I",  "c":"COMMAND",  "id":518070,  "ctx":"conn7","msg":"CMD: drop","attr":{"namespace":"test.jstests_all"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.044+00:00"},"s":"I",  "c":"STORAGE",  "id":20320,   "ctx":"conn7","msg":"createCollection","attr":{"namespace":"test.jstests_all","uuidDisposition":"generated","uuid":{"uuid":{"$uuid":"ed2cf686-f335-4399-8473-5a7ed779496d"}},"options":{}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.058+00:00"},"s":"I",  "c":"INDEX",    "id":20345,   "ctx":"conn7","msg":"Index build: done building","attr":{"buildUUID":null,"namespace":"test.jstests_all","index":"_id_","commitTimestamp":null}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.081+00:00"},"s":"I",  "c":"COMMAND",  "id":518070,  "ctx":"conn7","msg":"CMD: drop","attr":{"namespace":"test.jstests_all"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.082+00:00"},"s":"I",  "c":"STORAGE",  "id":20318,   "ctx":"conn7","msg":"Finishing collection drop","attr":{"namespace":"test.jstests_all","uuid":{"uuid":{"$uuid":"ed2cf686-f335-4399-8473-5a7ed779496d"}}}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.092+00:00"},"s":"I",  "c":"NETWORK",  "id":22944,   "ctx":"conn7","msg":"Connection ended","attr":{"remote":"127.0.0.1:49818","connectionId":7,"connectionCount":2}}
+[js_test:fuzzdemo] 2020-10-16T02:08:04.109+0000 JSTest jstests/fuzzed/fuzzdemo.js finished.
+[executor:js_test:job0] 2020-10-16T02:08:04.109+0000 fuzzdemo.js ran in 1.26 seconds: no failures detected.
+[executor:js_test:job0] 2020-10-16T02:08:04.110+0000 Running job0_fixture_teardown...
+[js_test:job0_fixture_teardown] 2020-10-16T02:08:04.110+0000 Fixture status:
++------------------+-----+-----+
+|name              |port |pid  |
++------------------+-----+-----+
+|MongoDFixture:job0|20000|16892|
++------------------+-----+-----+
+[js_test:job0_fixture_teardown] 2020-10-16T02:08:04.110+0000 Starting the teardown of MongoDFixture (Job #0).
+[MongoDFixture:job0] Stopping mongod on port 20000 with pid 16892...
+[executor] 2020-10-16T02:08:04.110+0000 Waiting for threads to complete
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.110+00:00"},"s":"I",  "c":"CONTROL",  "id":23377,   "ctx":"SignalHandler","msg":"Received signal","attr":{"signal":15,"error":"Terminated"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.110+00:00"},"s":"I",  "c":"CONTROL",  "id":23378,   "ctx":"SignalHandler","msg":"Signal was sent by kill(2)","attr":{"pid":16887,"uid":1000}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.111+00:00"},"s":"I",  "c":"CONTROL",  "id":23381,   "ctx":"SignalHandler","msg":"will terminate after current cmd ends"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.111+00:00"},"s":"I",  "c":"REPL",     "id":4784900, "ctx":"SignalHandler","msg":"Stepping down the ReplicationCoordinator for shutdown","attr":{"waitTimeMillis":15000}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.111+00:00"},"s":"I",  "c":"REPL",     "id":4794602, "ctx":"SignalHandler","msg":"Attempting to enter quiesce mode"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.112+00:00"},"s":"I",  "c":"COMMAND",  "id":4784901, "ctx":"SignalHandler","msg":"Shutting down the MirrorMaestro"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.112+00:00"},"s":"I",  "c":"SHARDING", "id":4784902, "ctx":"SignalHandler","msg":"Shutting down the WaitForMajorityService"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.112+00:00"},"s":"I",  "c":"CONTROL",  "id":4784903, "ctx":"SignalHandler","msg":"Shutting down the LogicalSessionCache"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.112+00:00"},"s":"I",  "c":"NETWORK",  "id":20562,   "ctx":"SignalHandler","msg":"Shutdown: going to close listening sockets"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.112+00:00"},"s":"I",  "c":"NETWORK",  "id":23017,   "ctx":"listener","msg":"removing socket file","attr":{"path":"/tmp/mongodb-20000.sock"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.113+00:00"},"s":"I",  "c":"NETWORK",  "id":4784905, "ctx":"SignalHandler","msg":"Shutting down the global connection pool"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.113+00:00"},"s":"I",  "c":"CONTROL",  "id":4784906, "ctx":"SignalHandler","msg":"Shutting down the FlowControlTicketholder"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.113+00:00"},"s":"I",  "c":"-",        "id":20520,   "ctx":"SignalHandler","msg":"Stopping further Flow Control ticket acquisitions."}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.113+00:00"},"s":"I",  "c":"CONTROL",  "id":4784908, "ctx":"SignalHandler","msg":"Shutting down the PeriodicThreadToAbortExpiredTransactions"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.113+00:00"},"s":"I",  "c":"REPL",     "id":4784909, "ctx":"SignalHandler","msg":"Shutting down the ReplicationCoordinator"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.113+00:00"},"s":"I",  "c":"TENANT_M", "id":5093807, "ctx":"SignalHandler","msg":"Shutting down all TenantMigrationAccessBlockers on global shutdown"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.113+00:00"},"s":"I",  "c":"TENANT_M", "id":5093808, "ctx":"SignalHandler","msg":"Shutting down and joining the tenant migration donor executor"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.114+00:00"},"s":"I",  "c":"ASIO",     "id":22582,   "ctx":"TenantMigrationWorkerNetwork","msg":"Killing all outstanding egress activity."}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.114+00:00"},"s":"I",  "c":"SHARDING", "id":4784910, "ctx":"SignalHandler","msg":"Shutting down the ShardingInitializationMongoD"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.114+00:00"},"s":"I",  "c":"REPL",     "id":4784911, "ctx":"SignalHandler","msg":"Enqueuing the ReplicationStateTransitionLock for shutdown"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.114+00:00"},"s":"I",  "c":"-",        "id":4784912, "ctx":"SignalHandler","msg":"Killing all operations for shutdown"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.115+00:00"},"s":"I",  "c":"-",        "id":4695300, "ctx":"SignalHandler","msg":"Interrupted all currently running operations","attr":{"opsKilled":3}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.115+00:00"},"s":"I",  "c":"COMMAND",  "id":4784913, "ctx":"SignalHandler","msg":"Shutting down all open transactions"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.115+00:00"},"s":"I",  "c":"REPL",     "id":4784914, "ctx":"SignalHandler","msg":"Acquiring the ReplicationStateTransitionLock for shutdown"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.115+00:00"},"s":"I",  "c":"INDEX",    "id":4784915, "ctx":"SignalHandler","msg":"Shutting down the IndexBuildsCoordinator"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.115+00:00"},"s":"I",  "c":"REPL",     "id":4784916, "ctx":"SignalHandler","msg":"Reacquiring the ReplicationStateTransitionLock for shutdown"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.115+00:00"},"s":"I",  "c":"REPL",     "id":4784917, "ctx":"SignalHandler","msg":"Attempting to mark clean shutdown"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.115+00:00"},"s":"I",  "c":"NETWORK",  "id":4784918, "ctx":"SignalHandler","msg":"Shutting down the ReplicaSetMonitor"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.115+00:00"},"s":"I",  "c":"SHARDING", "id":4784921, "ctx":"SignalHandler","msg":"Shutting down the MigrationUtilExecutor"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.116+00:00"},"s":"I",  "c":"CONTROL",  "id":4784925, "ctx":"SignalHandler","msg":"Shutting down free monitoring"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.116+00:00"},"s":"I",  "c":"CONTROL",  "id":20609,   "ctx":"SignalHandler","msg":"Shutting down free monitoring"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.116+00:00"},"s":"I",  "c":"FTDC",     "id":4784926, "ctx":"SignalHandler","msg":"Shutting down full-time data capture"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.116+00:00"},"s":"I",  "c":"FTDC",     "id":20626,   "ctx":"SignalHandler","msg":"Shutting down full-time diagnostic data capture"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.119+00:00"},"s":"I",  "c":"CONTROL",  "id":4784927, "ctx":"SignalHandler","msg":"Shutting down the HealthLog"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.119+00:00"},"s":"I",  "c":"CONTROL",  "id":4784928, "ctx":"SignalHandler","msg":"Shutting down the TTL monitor"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.119+00:00"},"s":"I",  "c":"INDEX",    "id":3684100, "ctx":"SignalHandler","msg":"Shutting down TTL collection monitor thread"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.120+00:00"},"s":"I",  "c":"INDEX",    "id":3684101, "ctx":"SignalHandler","msg":"Finished shutting down TTL collection monitor thread"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.120+00:00"},"s":"I",  "c":"CONTROL",  "id":4784929, "ctx":"SignalHandler","msg":"Acquiring the global lock for shutdown"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.120+00:00"},"s":"I",  "c":"CONTROL",  "id":4784930, "ctx":"SignalHandler","msg":"Shutting down the storage engine"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.120+00:00"},"s":"I",  "c":"STORAGE",  "id":22320,   "ctx":"SignalHandler","msg":"Shutting down journal flusher thread"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.120+00:00"},"s":"I",  "c":"STORAGE",  "id":22321,   "ctx":"SignalHandler","msg":"Finished shutting down journal flusher thread"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.120+00:00"},"s":"I",  "c":"STORAGE",  "id":22322,   "ctx":"SignalHandler","msg":"Shutting down checkpoint thread"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.121+00:00"},"s":"I",  "c":"STORAGE",  "id":22323,   "ctx":"SignalHandler","msg":"Finished shutting down checkpoint thread"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.121+00:00"},"s":"I",  "c":"STORAGE",  "id":20282,   "ctx":"SignalHandler","msg":"Deregistering all the collections"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.121+00:00"},"s":"I",  "c":"STORAGE",  "id":22261,   "ctx":"SignalHandler","msg":"Timestamp monitor shutting down"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.122+00:00"},"s":"I",  "c":"STORAGE",  "id":22317,   "ctx":"SignalHandler","msg":"WiredTigerKVEngine shutting down"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.122+00:00"},"s":"I",  "c":"STORAGE",  "id":22318,   "ctx":"SignalHandler","msg":"Shutting down session sweeper thread"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.123+00:00"},"s":"I",  "c":"STORAGE",  "id":22319,   "ctx":"SignalHandler","msg":"Finished shutting down session sweeper thread"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.123+00:00"},"s":"I",  "c":"STORAGE",  "id":4795902, "ctx":"SignalHandler","msg":"Closing WiredTiger","attr":{"closeConfig":"leak_memory=true,"}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.170+00:00"},"s":"I",  "c":"STORAGE",  "id":4795901, "ctx":"SignalHandler","msg":"WiredTiger closed","attr":{"durationMillis":47}}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.170+00:00"},"s":"I",  "c":"STORAGE",  "id":22279,   "ctx":"SignalHandler","msg":"shutdown: removing fs lock..."}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.171+00:00"},"s":"I",  "c":"-",        "id":4784931, "ctx":"SignalHandler","msg":"Dropping the scope cache for shutdown"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.171+00:00"},"s":"I",  "c":"CONTROL",  "id":20565,   "ctx":"SignalHandler","msg":"Now exiting"}
+[MongoDFixture:job0] {"t":{"$date":"2020-10-16T02:08:04.171+00:00"},"s":"I",  "c":"CONTROL",  "id":23138,   "ctx":"SignalHandler","msg":"Shutting down","attr":{"exitCode":0}}
+[MongoDFixture:job0] Successfully stopped the mongod on port 20000.
+[js_test:job0_fixture_teardown] 2020-10-16T02:08:04.189+0000 Finished the teardown of MongoDFixture (Job #0).
+[executor:js_test:job0] 2020-10-16T02:08:04.189+0000 job0_fixture_teardown ran in 0.08 seconds: no failures detected.
+[executor] 2020-10-16T02:08:04.189+0000 Threads are completed!
+[executor] 2020-10-16T02:08:04.189+0000 Summary of latest execution: All 3 test(s) passed in 6.21 seconds.
+[resmoke] 2020-10-16T02:08:04.189+0000 ================================================================================
+[resmoke] 2020-10-16T02:08:04.189+0000 Summary of fuzzed suite: All 3 test(s) passed in 6.21 seconds.
+[resmoke] 2020-10-16T02:08:04.189+0000 Exiting with code: 0

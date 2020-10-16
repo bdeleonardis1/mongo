@@ -31,6 +31,8 @@ class ShardedClusterFixture(interface.Fixture):  # pylint: disable=too-many-inst
             auth_options=None, configsvr_options=None, shard_options=None, mixed_bin_versions=None):
         """Initialize ShardedClusterFixture with different options for the cluster processes."""
 
+        print("SHARDED")
+
         interface.Fixture.__init__(self, logger, job_num, dbpath_prefix=dbpath_prefix)
 
         if "dbpath" in mongod_options:
@@ -267,6 +269,8 @@ class ShardedClusterFixture(interface.Fixture):  # pylint: disable=too-many-inst
         replset_config_options = configsvr_options.pop("replset_config_options", {})
         replset_config_options["configsvr"] = True
 
+        print("mongod_options:", self.mongod_options)
+
         mongod_options = self.mongod_options.copy()
         mongod_options.update(configsvr_options.pop("mongod_options", {}))
         mongod_options["configsvr"] = ""
@@ -329,6 +333,7 @@ class ShardedClusterFixture(interface.Fixture):  # pylint: disable=too-many-inst
         mongod_options["shardsvr"] = ""
         mongod_options["dbpath"] = os.path.join(self._dbpath_prefix, "shard{}".format(index))
 
+        print("Sharded above standalone")
         return standalone.MongoDFixture(mongod_logger, self.job_num, mongod_options=mongod_options,
                                         preserve_dbpath=preserve_dbpath, **shard_options)
 

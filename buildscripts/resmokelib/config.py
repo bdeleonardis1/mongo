@@ -58,6 +58,7 @@ DEFAULTS = {
     "exclude_with_any_tags": None,
     "flow_control": None,
     "flow_control_tickets": None,
+    "fuzz": False,
     "genny_executable": None,
     "include_with_any_tags": None,
     "install_dir": None,

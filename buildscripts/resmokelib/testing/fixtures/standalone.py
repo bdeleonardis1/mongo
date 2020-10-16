@@ -24,6 +24,10 @@ class MongoDFixture(interface.Fixture):
             preserve_dbpath=False):
         """Initialize MongoDFixture with different options for the mongod process."""
 
+        print("STANDALONE")
+
+        print("MONGOD_OPTIONS:", mongod_options)
+
         self.mongod_options = utils.default_if_none(mongod_options, {})
         interface.Fixture.__init__(self, logger, job_num, dbpath_prefix=dbpath_prefix)
 
@@ -66,6 +70,7 @@ class MongoDFixture(interface.Fixture):
             self.mongod_options["port"] = core.network.PortAllocator.next_fixture_port(self.job_num)
         self.port = self.mongod_options["port"]
 
+        print("self.mongod_options:", self.mongod_options)
         mongod = core.programs.mongod_program(self.logger, executable=self.mongod_executable,
                                               **self.mongod_options)
         try:
