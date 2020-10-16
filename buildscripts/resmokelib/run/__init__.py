@@ -167,6 +167,8 @@ class TestRunner(Subcommand):  # pylint: disable=too-many-instance-attributes
         self._resmoke_logger.info("verbatim resmoke.py invocation: %s",
                                   " ".join([shlex.quote(arg) for arg in sys.argv]))
 
+        self._resmoke_logger.info("config.EVERGREEN_TASK_ID: %s", config.EVERGREEN_TASK_ID)
+
         if config.EVERGREEN_TASK_ID:
             local_args = to_local_args()
             self._resmoke_logger.info("resmoke.py invocation for local usage: %s %s",

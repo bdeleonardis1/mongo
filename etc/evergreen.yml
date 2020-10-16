@@ -1626,7 +1626,7 @@ functions:
             ${san_options}                                \
             ${snmp_config_path}                           \
             ${resmoke_wrapper}                            \
-            $python buildscripts/fuzzresmoke.py -j4 --suites=fuzzed jstests/fuzzed/fuzzdemo.js
+            $python buildscripts/fuzzresmoke.py -j4 --suites=fuzzed --taskId=${task_id} jstests/fuzzed/fuzzdemo.js
         resmoke_exit_code=$?
         set -o errexit
 
