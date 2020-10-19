@@ -167,8 +167,6 @@ class TestRunner(Subcommand):  # pylint: disable=too-many-instance-attributes
         self._resmoke_logger.info("verbatim resmoke.py invocation: %s",
                                   " ".join([shlex.quote(arg) for arg in sys.argv]))
 
-        self._resmoke_logger.info("config.EVERGREEN_TASK_ID: %s", config.EVERGREEN_TASK_ID)
-
         if config.EVERGREEN_TASK_ID:
             local_args = to_local_args()
             self._resmoke_logger.info("resmoke.py invocation for local usage: %s %s",
@@ -204,7 +202,6 @@ class TestRunner(Subcommand):  # pylint: disable=too-many-instance-attributes
     def _run_suite(self, suite):
         """Run a test suite."""
         self._log_suite_config(suite)
-        
         suite.record_suite_start()
         interrupted = self._execute_suite(suite)
         suite.record_suite_end()
@@ -269,7 +266,6 @@ class TestRunner(Subcommand):  # pylint: disable=too-many-instance-attributes
             self.exit(1)
 
     def _log_suite_config(self, suite):
-        print("Logging suite configs:")
         sb = [
             "YAML configuration of suite {}".format(suite.get_display_name()),
             utils.dump_yaml({"test_kind": suite.get_test_kind_config()}), "",
