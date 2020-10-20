@@ -27,8 +27,8 @@ configs = [
 def get_parser():
     """Returns the parser"""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--fuzzSeed", help="Allows user to specify a seed to reproduce behavior")
-    parser.add_argument("--mongodSetParameters", help="Overrides the fuzzed parameters")
+    parser.add_argument("--fuzzSeed", metavar='', help="Allows user to specify a seed to reproduce behavior")
+    parser.add_argument("--mongodSetParameters", metavar='', help="Overrides the fuzzed parameters")
 
     return parser
 

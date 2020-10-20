@@ -12,7 +12,6 @@ def main(argv):
     :param argv: sys.argv
     :return: None
     """
-    print("argv:", argv)
     __start_time = time.time()
     subcommand = parser.parse_command_line(argv[1:], start_time=__start_time)
     subcommand.execute()
