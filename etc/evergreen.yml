@@ -1631,7 +1631,7 @@ functions:
             ${san_options}                                \
             ${snmp_config_path}                           \
             ${resmoke_wrapper}                            \
-            $python buildscripts/fuzzresmoke.py -j4 --suites=fuzzed \ 
+            $python buildscripts/mongod_config_fuzzer.py -j4 --suites=fuzzed \ 
                 ${record_with}                            \
                 ${test_flags}                             \
                 --log=buildlogger                         \
