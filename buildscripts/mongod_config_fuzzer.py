@@ -13,7 +13,7 @@ if __name__ == "__main__" and __package__ is None:
 import buildscripts.resmokelib.cli as cli
 from buildscripts.resmokelib import utils
 
-configs = [
+CONFIGS = [
     {
         "name": "wiredTigerCursorCacheSize",
         "generate": lambda rng: rng.randint(10, 100)
@@ -46,7 +46,7 @@ def get_fuzzed_parameters(seed):
     """Create random configurations based on the seed"""
     rng = random.Random(seed)
     params = {}
-    for config in configs:
+    for config in CONFIGS:
         params[config["name"]] = config["generate"](rng)
 
     return params
@@ -62,7 +62,7 @@ def merge_parameters(fuzzed_params, provided_params):
 
 def convert_dict_to_unquoted_json(dct):
     """
-    Returns a json string with unquoted keys and values. For example if the input is: 
+    Returns a json string with unquoted keys and values. For example if the input is:
     {"hello": "world"} the output would be "{hello: world}"
     """
     json = ""
@@ -81,10 +81,10 @@ def main():
     a seed it must be the first parameter.
 
     For example, to run the all2.js file with random configurations you would run:
-    python buildscripts/fuzzresmoke.py --suites=core jstests/core/all2.js 
+    python buildscripts/mongod_config_fuzzer.py --suites=core jstests/core/all2.js
 
     To run all2.js with a provided seed, you would run:
-    python buildscripts/fuzzresmoke.py --seed 123 --suites=core jstests/core/all2.js 
+    python buildscripts/mongod_config_fuzzer.py --fuzzSeed=123 --suites=core jstests/core/all2.js
     """
     known, unknown = get_parser().parse_known_args(sys.argv)
     unknown = unknown[1:] # deletes the "buildscripts/mongod_config_fuzzer.py" from the args list
