@@ -383,4 +383,3 @@ def _fuzz_set_parameters(seed, user_provided_params):
         params[key] = value
 
     return utils.dump_yaml(params)
-    

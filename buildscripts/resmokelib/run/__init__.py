@@ -1046,6 +1046,7 @@ class RunPlugin(PluginInterface):
         parser.add_argument("test_files", metavar="TEST_FILES", nargs="*",
                             help="Explicit test files to run")
 
+
 def to_local_args(input_args=None):  # pylint: disable=too-many-branches,too-many-locals
     """
     Return a command line invocation for resmoke.py suitable for being run outside of Evergreen.
