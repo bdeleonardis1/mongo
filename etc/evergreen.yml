@@ -5695,6 +5695,24 @@ tasks:
       resmoke_args: --suites=core --storageEngine=wiredTiger
 
 - <<: *task_template
+  name: fuzzed_jsCore
+  tags: ["jscore", "common"]
+  commands:
+  - func: "do setup"
+  - func: "run tests"
+    vars:
+      resmoke_args: --suites=core --storageEngine=wiredTiger --fuzzMongodConfigs
+
+- <<: *task_template
+  name: fuzzed_fuzzdemo
+  tags: []
+  commands:
+  - func: "do setup"
+  - func: "run tests"
+    vars:
+      resmoke_args: --suites=core --storageEngine=wiredTiger --fuzzMongodConfigs
+
+- <<: *task_template
   name: jsCore_ese
   tags: ["jscore", "encrypt"]
   depends_on:

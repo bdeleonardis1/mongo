@@ -672,6 +672,12 @@ class RunPlugin(PluginInterface):
         parser.add_argument("--mongod", dest="mongod_executable", metavar="PATH",
                             help="The path to the mongod executable for resmoke.py to use.")
 
+        parser.add_argument("--fuzzMongodConfigs", dest="fuzz_mongod_configs", action="store_true",
+                            help="Will randomly choose storage configs that were not specified.")
+
+        parser.add_argument("--fuzzSeed", dest="fuzz_seed", metavar="PATH",
+                            help="Sets the seed used by storage config fuzzer")
+
         parser.add_argument(
             "--mongodSetParameters", dest="mongod_set_parameters", action="append",
             metavar="{key1: value1, key2: value2, ..., keyN: valueN}",
