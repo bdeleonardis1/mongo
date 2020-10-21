@@ -14,6 +14,7 @@ import pymongo.uri_parser
 
 from buildscripts.resmokelib import config as _config
 from buildscripts.resmokelib import utils
+from buildscripts.resmokelib import mongod_fuzzer_configs
 
 
 def validate_and_update_config(parser, args):
@@ -181,16 +182,14 @@ def _update_config_vars(values):  # pylint: disable=too-many-statements,too-many
         return utils.dump_yaml(ret)
 
     _config.MONGOD_EXECUTABLE = _expand_user(config.pop("mongod_executable"))
-    _config.USER_MONGOD_SET_PARAMETERS = _merge_set_params(config.pop("mongod_set_parameters"))
+    _config.MONGOD_SET_PARAMETERS = _merge_set_params(config.pop("mongod_set_parameters"))
     _config.FUZZ_MONGOD_CONFIGS = config.pop("fuzz_mongod_configs")
     _config.FUZZ_SEED = config.pop("fuzz_seed")
     if _config.FUZZ_MONGOD_CONFIGS and not _config.FUZZ_SEED:
         _config.FUZZ_SEED = random.randrange(sys.maxsize)
 
     if (_config.FUZZ_MONGOD_CONFIGS):
-        _config.MONGOD_SET_PARAMETERS = _fuzz_set_parameters(_config.FUZZ_SEED, _config.USER_MONGOD_SET_PARAMETERS)
-    else:  
-        _config.MONGOD_SET_PARAMETERS = _config.USER_MONGOD_SET_PARAMETERS
+        _config.MONGOD_SET_PARAMETERS = _fuzz_set_parameters(_config.FUZZ_SEED, _config.MONGOD_SET_PARAMETERS)
 
     _config.MONGOS_EXECUTABLE = _expand_user(config.pop("mongos_executable"))
     _config.MONGOS_SET_PARAMETERS = _merge_set_params(config.pop("mongos_set_parameters"))
@@ -373,21 +372,11 @@ def _tags_from_list(tags_list):
         return tags
     return None
 
-FUZZER_CONFIGS = [
-    {
-        "name": "wiredTigerCursorCacheSize",
-        "generate": lambda rng: rng.randint(10, 100)
-    },
-    {
-        "name": "wiredTigerSessionCloseIdleTimeSecs",
-        "generate": lambda rng: rng.randint(90, 100)
-    }
-]
 
 def _fuzz_set_parameters(seed, user_provided_params):
     rng = random.Random(seed)
     params = {}
-    for config in FUZZER_CONFIGS:
+    for config in mongod_fuzzer_configs.FUZZER_CONFIGS:
         params[config["name"]] = config["generate"](rng)
 
     for key, value in utils.load_yaml(user_provided_params).items():

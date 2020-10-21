@@ -167,7 +167,14 @@ class TestRunner(Subcommand):  # pylint: disable=too-many-instance-attributes
         self._resmoke_logger.info("verbatim resmoke.py invocation: %s",
                                   " ".join([shlex.quote(arg) for arg in sys.argv]))
 
-        if config.EVERGREEN_TASK_ID:
+        if config.FUZZ_MONGOD_CONFIGS:
+            local_args = to_local_args()
+            local_args = strip_fuzz_config_params(local_args)
+            self._resmoke_logger.info("resmoke.py invocation for local usage: %s %s %s",
+                                      os.path.join("buildscripts", "resmoke.py"),
+                                      " ".join(local_args),
+                                      "--fuzzMongodConfigs --fuzzSeed=" + str(config.FUZZ_SEED))
+        elif config.EVERGREEN_TASK_ID:
             local_args = to_local_args()
             self._resmoke_logger.info("resmoke.py invocation for local usage: %s %s",
                                       os.path.join("buildscripts", "resmoke.py"),
@@ -1039,7 +1046,6 @@ class RunPlugin(PluginInterface):
         parser.add_argument("test_files", metavar="TEST_FILES", nargs="*",
                             help="Explicit test files to run")
 
-
 def to_local_args(input_args=None):  # pylint: disable=too-many-branches,too-many-locals
     """
     Return a command line invocation for resmoke.py suitable for being run outside of Evergreen.
@@ -1137,3 +1143,13 @@ def to_local_args(input_args=None):  # pylint: disable=too-many-branches,too-man
 
     return ["run"] + [arg for arg in (suites_arg, storage_engine_arg) if arg is not None
                       ] + other_local_args + positional_args
+
+
+def strip_fuzz_config_params(input_args):
+    """Deletes fuzz related command line args because we have to add the --fuzzSeed manually"""
+    ret = []
+    for arg in input_args:
+        if "--fuzzMongodConfigs" not in arg and "-fuzzSeed" not in arg:
+            ret.append(arg)
+
+    return ret
