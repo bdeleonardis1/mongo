@@ -55,7 +55,7 @@ def generate_independent_parameters(rng):
 
 def fuzz_set_parameters(seed, user_provided_params):
     """Randomly generates mongod configurations. Overwrites any values that the user provided
-       manually with --mongodSetParameters"""
+       manually with --mongodSetParameters. Returns (mongod_set_parameters, wt_engine_config"""
     rng = random.Random(seed)
 
     ret = {}
