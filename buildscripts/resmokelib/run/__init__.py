@@ -170,12 +170,14 @@ class TestRunner(Subcommand):  # pylint: disable=too-many-instance-attributes
         if config.FUZZ_MONGOD_CONFIGS:
             local_args = to_local_args()
             local_args = strip_fuzz_config_params(local_args)
-            self._resmoke_logger.info("resmoke.py invocation for local usage: %s %s %s",
-                                      os.path.join("buildscripts", "resmoke.py"),
-                                      " ".join(local_args),
-                                      "--fuzzMongodConfigs --configFuzzSeed=" + str(config.CONFIG_FUZZ_SEED))
-            self._resmoke_logger.info("Fuzzed mongodSetParameters:\n%s", config.MONGOD_SET_PARAMETERS)
-            self._resmoke_logger.info("Fuzzed wiredTigerConnectionString: %s", config.WT_ENGINE_CONFIG)
+            self._resmoke_logger.info(
+                "resmoke.py invocation for local usage: %s %s %s",
+                os.path.join("buildscripts", "resmoke.py"), " ".join(local_args),
+                "--fuzzMongodConfigs --configFuzzSeed=" + str(config.CONFIG_FUZZ_SEED))
+            self._resmoke_logger.info("Fuzzed mongodSetParameters:\n%s",
+                                      config.MONGOD_SET_PARAMETERS)
+            self._resmoke_logger.info("Fuzzed wiredTigerConnectionString: %s",
+                                      config.WT_ENGINE_CONFIG)
         elif config.EVERGREEN_TASK_ID:
             local_args = to_local_args()
             self._resmoke_logger.info("resmoke.py invocation for local usage: %s %s",
@@ -1149,7 +1151,7 @@ def to_local_args(input_args=None):  # pylint: disable=too-many-branches,too-man
 
 
 def strip_fuzz_config_params(input_args):
-    """Deletes fuzz related command line args because we have to add the --fuzzSeed manually"""
+    """Delete fuzz related command line args because we have to add the --fuzzSeed manually."""
     ret = []
     for arg in input_args:
         if "--fuzzMongodConfigs" not in arg and "-fuzzSeed" not in arg:

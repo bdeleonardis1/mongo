@@ -248,7 +248,7 @@ def _update_config_vars(values):  # pylint: disable=too-many-statements,too-many
     # Wiredtiger options.
     _config.WT_COLL_CONFIG = config.pop("wt_coll_config")
     wt_engine_config = config.pop("wt_engine_config")
-    if wt_engine_config: # prevents fuzzed wt_engine_config from being overwritten unless user specifies it
+    if wt_engine_config:  # prevents fuzzed wt_engine_config from being overwritten unless user specifies it
         _config.WT_ENGINE_CONFIG = config.pop("wt_engine_config")
     _config.WT_INDEX_CONFIG = config.pop("wt_index_config")
 
