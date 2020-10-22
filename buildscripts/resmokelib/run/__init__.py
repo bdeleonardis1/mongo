@@ -173,7 +173,7 @@ class TestRunner(Subcommand):  # pylint: disable=too-many-instance-attributes
             self._resmoke_logger.info("resmoke.py invocation for local usage: %s %s %s",
                                       os.path.join("buildscripts", "resmoke.py"),
                                       " ".join(local_args),
-                                      "--fuzzMongodConfigs --fuzzSeed=" + str(config.FUZZ_SEED))
+                                      "--fuzzMongodConfigs --fuzzSeed=" + str(config.CONFIG_FUZZ_SEED))
         elif config.EVERGREEN_TASK_ID:
             local_args = to_local_args()
             self._resmoke_logger.info("resmoke.py invocation for local usage: %s %s",
@@ -682,7 +682,7 @@ class RunPlugin(PluginInterface):
         parser.add_argument("--fuzzMongodConfigs", dest="fuzz_mongod_configs", action="store_true",
                             help="Will randomly choose storage configs that were not specified.")
 
-        parser.add_argument("--fuzzSeed", dest="fuzz_seed", metavar="PATH",
+        parser.add_argument("--configFuzzSeed", dest="config_fuzz_seed", metavar="PATH",
                             help="Sets the seed used by storage config fuzzer")
 
         parser.add_argument(

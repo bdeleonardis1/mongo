@@ -184,12 +184,12 @@ def _update_config_vars(values):  # pylint: disable=too-many-statements,too-many
     _config.MONGOD_EXECUTABLE = _expand_user(config.pop("mongod_executable"))
     _config.MONGOD_SET_PARAMETERS = _merge_set_params(config.pop("mongod_set_parameters"))
     _config.FUZZ_MONGOD_CONFIGS = config.pop("fuzz_mongod_configs")
-    _config.FUZZ_SEED = config.pop("fuzz_seed")
+    _config.CONFIG_FUZZ_SEED = config.pop("config_fuzz_seed")
 
     if _config.FUZZ_MONGOD_CONFIGS:
-        if not _config.FUZZ_SEED:
-            _config.FUZZ_SEED = random.randrange(sys.maxsize)
-        _config.MONGOD_SET_PARAMETERS = _fuzz_set_parameters(_config.FUZZ_SEED, _config.MONGOD_SET_PARAMETERS)
+        if not _config.CONFIG_FUZZ_SEED:
+            _config.CONFIG_FUZZ_SEED = random.randrange(sys.maxsize)
+        _config.MONGOD_SET_PARAMETERS = _fuzz_set_parameters(_config.CONFIG_FUZZ_SEED, _config.MONGOD_SET_PARAMETERS)
 
     _config.MONGOS_EXECUTABLE = _expand_user(config.pop("mongos_executable"))
     _config.MONGOS_SET_PARAMETERS = _merge_set_params(config.pop("mongos_set_parameters"))
