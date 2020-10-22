@@ -47,8 +47,8 @@ def generate_independent_parameters(rng):
     ret = {}
     ret["wiredTigerCursorCacheSize"] = rng.randint(-100, 100)
     ret["wiredTigerSessionCloseIdleTimeSecs"] = rng.randint(0, 300)
-    ret["wiredTigerConcurrentWriteTransactions"] = rng.randint(64, 50 * 1000)
-    ret["wiredTigerConcurrentReadTransactions"] = rng.randint(64, 50 * 1000)
+    ret["wiredTigerConcurrentWriteTransactions"] = rng.randint(16, 256)
+    ret["wiredTigerConcurrentReadTransactions"] = rng.randint(16, 256)
 
     return ret
 
