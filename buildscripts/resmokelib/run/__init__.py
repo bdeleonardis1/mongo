@@ -173,7 +173,9 @@ class TestRunner(Subcommand):  # pylint: disable=too-many-instance-attributes
             self._resmoke_logger.info("resmoke.py invocation for local usage: %s %s %s",
                                       os.path.join("buildscripts", "resmoke.py"),
                                       " ".join(local_args),
-                                      "--fuzzMongodConfigs --fuzzSeed=" + str(config.CONFIG_FUZZ_SEED))
+                                      "--fuzzMongodConfigs --configFuzzSeed=" + str(config.CONFIG_FUZZ_SEED))
+            self._resmoke_logger.info("Fuzzed mongodSetParameters:\n%s", config.MONGOD_SET_PARAMETERS)
+            self._resmoke_logger.info("Fuzzed wiredTigerConnectionString: %s", config.WT_ENGINE_CONFIG)
         elif config.EVERGREEN_TASK_ID:
             local_args = to_local_args()
             self._resmoke_logger.info("resmoke.py invocation for local usage: %s %s",

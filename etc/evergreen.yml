@@ -5695,8 +5695,8 @@ tasks:
       resmoke_args: --suites=core --storageEngine=wiredTiger
 
 - <<: *task_template
-  name: fuzzed_jsCore
-  tags: ["jscore", "common"]
+  name: config_fuzzer_jsCore
+  tags: ["jscore"]
   commands:
   - func: "do setup"
   - func: "run tests"
@@ -5704,13 +5704,13 @@ tasks:
       resmoke_args: --suites=core --storageEngine=wiredTiger --fuzzMongodConfigs
 
 - <<: *task_template
-  name: fuzzed_fuzzdemo
-  tags: ["fuzzdemo"]
+  name: config_fuzzer_concurrency
+  tags: ["concurrency"]
   commands:
   - func: "do setup"
   - func: "run tests"
     vars:
-      resmoke_args: --suites=fuzzed --storageEngine=wiredTiger --fuzzMongodConfigs
+      resmoke_args: --suites=core --storageEngine=wiredTiger --fuzzMongodConfigs
 
 - <<: *task_template
   name: jsCore_ese
@@ -10345,7 +10345,8 @@ buildvariants:
     distros:
     - rhel62-large
   - name: cst_jscore_passthrough
-  - name: fuzzed_jsCore
+  - name: config_fuzzer_jsCore
+  - name: config_fuzzer_concurrency
 
 - name: enterprise-rhel-62-64-bit-dynamic-disabled-feature-flags
   display_name: "~ Shared Library Enterprise RHEL 6.2 (disabled feature flags)"

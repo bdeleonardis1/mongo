@@ -1,10 +1,13 @@
 """Generator functions for all parameters that we fuzz when invoked with --fuzzMongodConfigs"""
 
+import random
+from buildscripts.resmokelib import utils
+
 def generate_eviction_configs(rng):
-    """Generates random configurations for wiredTigerEngineConfigString parameter"""
+    """Generates random configurations for wiredTigerEngineConfigString parameter"""   
     eviction_checkpoint_target = rng.randint(1, 100)
     eviction_target = rng.randint(10, 99)
-    eviction_trigger = rng.randint(eviction_target, 100)
+    eviction_trigger = rng.randint(eviction_target+1, 100)
     eviction_dirty_target = rng.randint(1, eviction_target)
     eviction_dirty_trigger = rng.randint(1, eviction_dirty_target)
 
@@ -12,36 +15,56 @@ def generate_eviction_configs(rng):
     close_handle_minimum = rng.randint(0, 1000)
     close_scan_interval = rng.randint(1, 100)
 
-    return """'eviction_checkpoint_target={0},eviction_dirty_target={1},eviction_dirty_trigger={2},
-           eviction_target={3},eviction_trigger={4},file_manager=(close_handle_minimum={5},
-           close_idle_time={6},close_scan_interval={7})'""".format(eviction_checkpoint_target,
-                                                                  eviction_target,
-                                                                  eviction_trigger,
-                                                                  eviction_dirty_target,
-                                                                  eviction_dirty_trigger,
-                                                                  close_idle_time_secs,
-                                                                  close_handle_minimum,
-                                                                  close_scan_interval)
+    return "eviction_checkpoint_target={0},eviction_dirty_target={1},eviction_dirty_trigger={2},"\
+           "eviction_target={3},eviction_trigger={4},file_manager=(close_handle_minimum={5},"\
+           "close_idle_time={6},close_scan_interval={7})".format(eviction_checkpoint_target,
+                                                                 eviction_dirty_target,
+                                                                 eviction_dirty_trigger,
+                                                                 eviction_target,
+                                                                 eviction_trigger,
+                                                                 close_handle_minimum,
+                                                                 close_idle_time_secs,
+                                                                 close_scan_interval)
 
-FUZZER_CONFIGS = [
-    {
-        "name": "wiredTigerCursorCacheSize",
-        "generate": lambda rng: rng.randint(-100, 100)
-    },
-    {
-        "name": "wiredTigerSessionCloseIdleTimeSecs",
-        "generate": lambda rng: rng.randint(0, 300)
-    },
-    {
-        "name": "wiredTigerConcurrentWriteTransactions",
-        "generate": lambda rng: rng.randint(64, 50 * 1000)
-    },
-    {
-        "name": "wiredTigerConcurrentReadTransactions",
-        "generate": lambda rng: rng.randint(64, 50 * 1000)
-    },
-    # {
-    #     "name": "wiredTigerEngineConfigString",
-    #     "generate": generate_eviction_configs
-    # }
-]
+def generate_flow_control_parameters(rng):
+    """Generates parameters related to flow control and returns a dictionary"""
+    configs = {}
+    configs["enableFlowControl"] = rng.choice([True, False])
+    if not configs["enableFlowControl"]:
+        return configs
+
+    configs["flowControlTargetLagSeconds"] = rng.randint(1, 1000)
+    configs["flowControlThresholdLagPercentage"] = rng.random()
+    configs["flowControlMaxSamples"] = rng.randint(1, 1000*1000)
+    configs["flowControlSamplePeriod"] = rng.randint(1, 1000*1000)
+    configs["flowControlMinTicketsPerSecond"] = rng.randint(1, 10*1000)
+
+    return configs
+
+
+def generate_independent_parameters(rng):
+    """Returns a dictionary with values for each independent parameter"""
+    ret = {}
+    ret["wiredTigerCursorCacheSize"] = rng.randint(-100, 100)
+    ret["wiredTigerSessionCloseIdleTimeSecs"] = rng.randint(0, 300)
+    ret["wiredTigerConcurrentWriteTransactions"] = rng.randint(64, 50 * 1000)
+    ret["wiredTigerConcurrentReadTransactions"] = rng.randint(64, 50 * 1000)
+
+    return ret
+
+
+def fuzz_set_parameters(seed, user_provided_params):
+    """Randomly generates mongod configurations. Overwrites any values that the user provided
+       manually with --mongodSetParameters"""
+    rng = random.Random(seed)
+
+    ret = {}
+    params = [generate_flow_control_parameters(rng), generate_independent_parameters(rng)]
+    for dct in params:
+        for key, value in dct.items():
+            ret[key] = value
+
+    for key, value in utils.load_yaml(user_provided_params).items():
+        ret[key] = value
+
+    return utils.dump_yaml(ret), generate_eviction_configs(rng)

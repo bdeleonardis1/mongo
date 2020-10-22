@@ -189,7 +189,8 @@ def _update_config_vars(values):  # pylint: disable=too-many-statements,too-many
     if _config.FUZZ_MONGOD_CONFIGS:
         if not _config.CONFIG_FUZZ_SEED:
             _config.CONFIG_FUZZ_SEED = random.randrange(sys.maxsize)
-        _config.MONGOD_SET_PARAMETERS = _fuzz_set_parameters(_config.CONFIG_FUZZ_SEED, _config.MONGOD_SET_PARAMETERS)
+        _config.MONGOD_SET_PARAMETERS, _config.WT_ENGINE_CONFIG = mongod_fuzzer_configs \
+            .fuzz_set_parameters(_config.CONFIG_FUZZ_SEED, _config.MONGOD_SET_PARAMETERS)
 
     _config.MONGOS_EXECUTABLE = _expand_user(config.pop("mongos_executable"))
     _config.MONGOS_SET_PARAMETERS = _merge_set_params(config.pop("mongos_set_parameters"))
@@ -246,7 +247,9 @@ def _update_config_vars(values):  # pylint: disable=too-many-statements,too-many
 
     # Wiredtiger options.
     _config.WT_COLL_CONFIG = config.pop("wt_coll_config")
-    _config.WT_ENGINE_CONFIG = config.pop("wt_engine_config")
+    wt_engine_config = config.pop("wt_engine_config")
+    if wt_engine_config: # prevents fuzzed wt_engine_config from being overwritten
+        _config.WT_ENGINE_CONFIG = config.pop("wt_engine_config")
     _config.WT_INDEX_CONFIG = config.pop("wt_index_config")
 
     # Benchmark/Benchrun options.
@@ -371,15 +374,3 @@ def _tags_from_list(tags_list):
             tags.extend([t for t in tag.split(",") if t != ""])
         return tags
     return None
-
-
-def _fuzz_set_parameters(seed, user_provided_params):
-    rng = random.Random(seed)
-    params = {}
-    for config in mongod_fuzzer_configs.FUZZER_CONFIGS:
-        params[config["name"]] = config["generate"](rng)
-
-    for key, value in utils.load_yaml(user_provided_params).items():
-        params[key] = value
-
-    return utils.dump_yaml(params)
