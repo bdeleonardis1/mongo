@@ -1,10 +1,10 @@
 coll = db.stress_index;
 coll.drop();
 
-for (let i = 0; i < 10; i++) {
+const DOC_COUNT = 1500000 // ~ 50 MB
+
+for (let i = 0; i < DOC_COUNT; i++) {
     coll.save({ "a": 1 });
 }
 
 assert.commandFailedWithCode(coll.createIndex({ a: 1 }, { unique: true }), ErrorCodes.DuplicateKey)
-
-assert.eq(coll.find().count(), 10)
