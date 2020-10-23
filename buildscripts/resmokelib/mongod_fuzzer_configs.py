@@ -6,11 +6,11 @@ from buildscripts.resmokelib import utils
 
 def generate_eviction_configs(rng):
     """Generate random configurations for wiredTigerEngineConfigString parameter."""
-    eviction_checkpoint_target = rng.randint(1, 100)
-    eviction_target = rng.randint(10, 99)
-    eviction_trigger = rng.randint(eviction_target + 1, 100)
-    eviction_dirty_target = rng.randint(1, eviction_target)
-    eviction_dirty_trigger = rng.randint(1, eviction_dirty_target)
+    eviction_checkpoint_target = rng.randint(1, 99)
+    eviction_target = rng.randint(50, 95)
+    eviction_trigger = rng.randint(eviction_target + 1, 99)
+    eviction_dirty_target = rng.randint(5, 50)
+    eviction_dirty_trigger = rng.randint(eviction_dirty_target, 75)
 
     close_idle_time_secs = rng.randint(1, 100)
     close_handle_minimum = rng.randint(0, 1000)
