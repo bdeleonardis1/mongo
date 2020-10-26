@@ -3,7 +3,7 @@
 coll = db.stress_index;
 coll.drop();
 
-const DOC_COUNT = 2000000 // ~ 25 MB
+const DOC_COUNT = 2000000 // ~ 60 MB
 const MAX_CHUNK_SIZE = 100000
 
 var inserted = 0;
