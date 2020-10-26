@@ -16,6 +16,4 @@ while (inserted < DOC_COUNT) {
     inserted += docs.length;
 }
 
-assert.eq(coll.find().count(), DOC_COUNT);
-
 assert.commandFailedWithCode(coll.createIndex({ a: 1 }, { unique: true }), ErrorCodes.DuplicateKey);
