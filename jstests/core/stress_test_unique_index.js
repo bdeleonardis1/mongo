@@ -1,9 +1,11 @@
-// @tags: [assumes_unsharded_collection]
+// Tests that unique indexes can be built with a large number of duplicate values
+
+// @tags: [assumes_unsharded_collection, requires_non_retryable_writes]
 
 coll = db.stress_index;
 coll.drop();
 
-const DOC_COUNT = 2000000; // ~ 60 MB
+const DOC_COUNT = 2000000;  // ~ 60 MB
 const MAX_CHUNK_SIZE = 100000;
 
 var inserted = 0;
