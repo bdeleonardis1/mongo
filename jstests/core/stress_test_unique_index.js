@@ -3,17 +3,17 @@
 coll = db.stress_index;
 coll.drop();
 
-const DOC_COUNT = 2000000 // ~ 60 MB
-const MAX_CHUNK_SIZE = 100000
+const DOC_COUNT = 2000000; // ~ 60 MB
+const MAX_CHUNK_SIZE = 100000;
 
 var inserted = 0;
 while (inserted < DOC_COUNT) {
-    var docs = []
+    var docs = [];
     for (let i = 0; i < MAX_CHUNK_SIZE && inserted + docs.length < DOC_COUNT; i++) {
         docs.push({"a": 0});
     }
-    coll.insertMany(docs)
+    coll.insertMany(docs);
     inserted += docs.length;
 }
 
-assert.commandFailedWithCode(coll.createIndex({ a: 1 }, { unique: true }), ErrorCodes.DuplicateKey);
+assert.commandFailedWithCode(coll.createIndex({a: 1}, {unique: true}), ErrorCodes.DuplicateKey);
