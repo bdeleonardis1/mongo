@@ -102,7 +102,7 @@ public:
         return {};
     }
     void cleanShutdown() final {}
-    SnapshotManager* getSnapshotManager() const final {
+    SnapshotManager* getSnapshotManager() final {
         return nullptr;
     }
     void setJournalListener(JournalListener* jl) final {}

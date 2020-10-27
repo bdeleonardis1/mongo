@@ -35,6 +35,7 @@
 
 #include "mongo/db/storage/ephemeral_for_test/ephemeral_for_test_radix_store.h"
 #include "mongo/db/storage/ephemeral_for_test/ephemeral_for_test_record_store.h"
+#include "mongo/db/storage/ephemeral_for_test/ephemeral_for_test_snapshot_manager.h"
 #include "mongo/db/storage/ephemeral_for_test/ephemeral_for_test_sorted_impl.h"
 #include "mongo/db/storage/kv/kv_engine.h"
 
@@ -193,6 +194,10 @@ public:
 
     static bool instanceExists();
 
+    SnapshotManager* getSnapshotManager() override {
+        return &_snapshotManager;
+    }
+
 private:
     void _cleanHistory(WithLock);
 
@@ -215,6 +220,8 @@ private:
     // This map contains the different versions of the StringStore's referenced by their commit
     // timestamps.
     std::map<Timestamp, std::shared_ptr<StringStore>> _availableHistory;
+
+    EphemeralForTestSnapshotManager _snapshotManager;
 };
 }  // namespace ephemeral_for_test
 }  // namespace mongo

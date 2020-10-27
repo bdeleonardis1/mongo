@@ -260,8 +260,12 @@ TEST_F(SnapshotManagerTests, FailsWithNoCommittedSnapshot) {
 }
 
 TEST_F(SnapshotManagerTests, FailsAfterDropAllSnapshotsWhileYielded) {
+    std::cerr << "At the top of do \n";
+
     if (!snapshotManager)
         return;  // This test is only for engines that DO support SnapshotManagers.
+
+    std::cerr << "After do\n";
 
     auto op = makeOperation();
     op->recoveryUnit()->setTimestampReadSource(RecoveryUnit::ReadSource::kMajorityCommitted);

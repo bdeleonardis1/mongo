@@ -10,6 +10,7 @@ env.Library(
         'ephemeral_for_test_kv_engine.cpp',
         'ephemeral_for_test_record_store.cpp',
         'ephemeral_for_test_recovery_unit.cpp',
+        'ephemeral_for_test_snapshot_manager.cpp',
         'ephemeral_for_test_sorted_impl.cpp',
         'ephemeral_for_test_visibility_manager.cpp',
     ],

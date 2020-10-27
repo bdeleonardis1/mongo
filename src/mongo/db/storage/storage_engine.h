@@ -410,7 +410,7 @@ public:
      *
      * Pointer remains owned by the StorageEngine, not the caller.
      */
-    virtual SnapshotManager* getSnapshotManager() const = 0;
+    virtual SnapshotManager* getSnapshotManager() = 0;
 
     /**
      * Sets a new JournalListener, which is used by the storage engine to alert the rest of the
