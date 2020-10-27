@@ -198,6 +198,10 @@ public:
         return _snapshotManager.get();
     }
 
+    EphemeralForTestSnapshotManager* getEphemeralSpecificSnapshotManager() const {
+        return _snapshotManager.get();
+    }
+
 private:
     void _cleanHistory(WithLock);
 

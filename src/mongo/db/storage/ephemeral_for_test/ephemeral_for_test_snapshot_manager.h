@@ -49,7 +49,19 @@ public:
     void setLastApplied(const Timestamp& timestamp) final;
     boost::optional<Timestamp> getLastApplied() final;
     void clearCommittedSnapshot() final;
-};
 
+    boost::optional<Timestamp> getMinSnapshotForNextCommittedRead() const;
+
+private:
+    // Snapshot to use for reads at a commit timestamp.
+    mutable Mutex _committedSnapshotMutex =  // Guards _committedSnapshot.
+        MONGO_MAKE_LATCH("EphemeralForTestSnapshotManager::_committedSnapshotMutex");
+    boost::optional<Timestamp> _committedSnapshot;
+
+    // Timestamp to use for reads at a the lastApplied timestamp.
+    mutable Mutex _lastAppliedMutex =  // Guards _lastApplied.
+        MONGO_MAKE_LATCH("EphemeralForTestSnapshotManager::_lastAppliedMutex");
+    boost::optional<Timestamp> _lastApplied;
+};
 }  // namespace ephemeral_for_test
 }  // namespace mongo

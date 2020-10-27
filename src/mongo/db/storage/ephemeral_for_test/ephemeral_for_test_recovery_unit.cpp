@@ -99,6 +99,13 @@ bool RecoveryUnit::waitUntilDurable(OperationContext* opCtx) {
 }
 
 Status RecoveryUnit::majorityCommittedSnapshotAvailable() const {
+    invariant(_timestampReadSource == ReadSource::kMajorityCommitted);
+    auto snapshotName =
+        _KVEngine->getEphemeralSpecificSnapshotManager()->getMinSnapshotForNextCommittedRead();
+    if (!snapshotName) {
+        return {ErrorCodes::ReadConcernMajorityNotAvailableYet,
+                "Read concern majority reads are currently not possible."};
+    }
     return Status::OK();
 }
 

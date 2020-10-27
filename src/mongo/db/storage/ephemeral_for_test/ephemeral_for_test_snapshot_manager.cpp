@@ -31,17 +31,45 @@
 
 #include "mongo/db/storage/ephemeral_for_test/ephemeral_for_test_snapshot_manager.h"
 
+#include "mongo/db/server_options.h"
+
+
 namespace mongo {
 namespace ephemeral_for_test {
 
-void EphemeralForTestSnapshotManager::setCommittedSnapshot(const Timestamp& timestamp) {}
+void EphemeralForTestSnapshotManager::setCommittedSnapshot(const Timestamp& timestamp) {
+    stdx::lock_guard<Latch> lock(_committedSnapshotMutex);
 
-void EphemeralForTestSnapshotManager::setLastApplied(const Timestamp& timestamp) {}
-
-boost::optional<Timestamp> EphemeralForTestSnapshotManager::getLastApplied() {
-    return boost::none;
+    invariant(!_committedSnapshot || *_committedSnapshot <= timestamp);
+    _committedSnapshot = timestamp;
 }
 
-void EphemeralForTestSnapshotManager::clearCommittedSnapshot() {}
+void EphemeralForTestSnapshotManager::setLastApplied(const Timestamp& timestamp) {
+    stdx::lock_guard<Latch> lock(_lastAppliedMutex);
+    if (timestamp.isNull())
+        _lastApplied = boost::none;
+    else
+        _lastApplied = timestamp;
+}
+
+boost::optional<Timestamp> EphemeralForTestSnapshotManager::getLastApplied() {
+    stdx::lock_guard<Latch> lock(_lastAppliedMutex);
+    return _lastApplied;
+}
+
+void EphemeralForTestSnapshotManager::clearCommittedSnapshot() {
+    stdx::lock_guard<Latch> lock(_committedSnapshotMutex);
+    _committedSnapshot = boost::none;
+}
+
+boost::optional<Timestamp> EphemeralForTestSnapshotManager::getMinSnapshotForNextCommittedRead()
+    const {
+    if (!serverGlobalParams.enableMajorityReadConcern) {
+        return boost::none;
+    }
+
+    stdx::lock_guard<Latch> lock(_committedSnapshotMutex);
+    return _committedSnapshot;
+}
 }  // namespace ephemeral_for_test
 }  // namespace mongo
