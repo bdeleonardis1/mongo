@@ -194,8 +194,8 @@ public:
 
     static bool instanceExists();
 
-    SnapshotManager* getSnapshotManager() override {
-        return &_snapshotManager;
+    SnapshotManager* getSnapshotManager() const override {
+        return _snapshotManager.get();
     }
 
 private:
@@ -221,7 +221,8 @@ private:
     // timestamps.
     std::map<Timestamp, std::shared_ptr<StringStore>> _availableHistory;
 
-    EphemeralForTestSnapshotManager _snapshotManager;
+    std::unique_ptr<EphemeralForTestSnapshotManager> _snapshotManager =
+        std::make_unique<EphemeralForTestSnapshotManager>();
 };
 }  // namespace ephemeral_for_test
 }  // namespace mongo

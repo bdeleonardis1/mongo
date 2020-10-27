@@ -167,7 +167,7 @@ public:
 
     void clearDropPendingState() final;
 
-    SnapshotManager* getSnapshotManager() final;
+    SnapshotManager* getSnapshotManager() const final;
 
     void setJournalListener(JournalListener* jl) final;
 

@@ -336,7 +336,7 @@ public:
      *
      * Pointer remains owned by the StorageEngine, not the caller.
      */
-    virtual SnapshotManager* getSnapshotManager() {
+    virtual SnapshotManager* getSnapshotManager() const {
         return nullptr;
     }
 

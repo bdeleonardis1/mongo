@@ -835,7 +835,7 @@ bool StorageEngineImpl::isEphemeral() const {
     return _engine->isEphemeral();
 }
 
-SnapshotManager* StorageEngineImpl::getSnapshotManager() {
+SnapshotManager* StorageEngineImpl::getSnapshotManager() const {
     return _engine->getSnapshotManager();
 }
 

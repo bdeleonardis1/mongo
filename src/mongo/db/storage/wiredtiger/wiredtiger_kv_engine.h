@@ -239,7 +239,7 @@ public:
 
     void cleanShutdown() override;
 
-    SnapshotManager* getSnapshotManager() final {
+    SnapshotManager* getSnapshotManager() const final {
         return &_sessionCache->snapshotManager();
     }
 
