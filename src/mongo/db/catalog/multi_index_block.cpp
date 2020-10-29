@@ -581,7 +581,6 @@ Status MultiIndexBlock::_insert(OperationContext* opCtx, const BSONObj& doc, con
     return Status::OK();
 }
 
-
 Status MultiIndexBlock::dumpInsertsFromBulk(OperationContext* opCtx,
                                             const CollectionPtr& collection) {
     return dumpInsertsFromBulk(opCtx, collection, nullptr);
