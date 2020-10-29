@@ -158,7 +158,7 @@ let runTest = function(mongodOptions) {
      * Test 5. Corrupt the WiredTigerHS file in an unrecoverable way. Run repair and verify that
      * MongoDB was rebuilt properly and starts up normally.
      */
-    
+
     let corruptedWiredTigerHSFile = dbpath + "WiredTigerHS.wt";
     jsTestLog("corrupting WT History Store file: " + corruptedWiredTigerHSFile);
     corruptFile(corruptedWiredTigerHSFile);
