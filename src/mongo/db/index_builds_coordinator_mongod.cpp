@@ -274,21 +274,19 @@ IndexBuildsCoordinatorMongod::_startIndexBuild(OperationContext* opCtx,
     // The thread pool task will be responsible for signalling the condition variable when the index
     // build thread is done running.
     onScopeExitGuard.dismiss();
-    _threadPool.schedule([
-        this,
-        buildUUID,
-        dbName,
-        nss,
-        indexBuildOptions,
-        logicalOp,
-        opDesc,
-        replState,
-        startPromise = std::move(startPromise),
-        startTimestamp,
-        shardVersion,
-        dbVersion,
-        resumeInfo
-    ](auto status) mutable noexcept {
+    _threadPool.schedule([this,
+                          buildUUID,
+                          dbName,
+                          nss,
+                          indexBuildOptions,
+                          logicalOp,
+                          opDesc,
+                          replState,
+                          startPromise = std::move(startPromise),
+                          startTimestamp,
+                          shardVersion,
+                          dbVersion,
+                          resumeInfo](auto status) mutable noexcept {
         auto onScopeExitGuard = makeGuard([&] {
             stdx::unique_lock<Latch> lk(_mutex);
             _numActiveIndexBuilds--;
@@ -297,8 +295,7 @@ IndexBuildsCoordinatorMongod::_startIndexBuild(OperationContext* opCtx,
 
         // Clean up if we failed to schedule the task.
         if (!status.isOK()) {
-            stdx::unique_lock<Latch> lk(_mutex);
-            _unregisterIndexBuild(lk, replState);
+            activeIndexBuilds.unregisterIndexBuild(&_indexBuildsManager, replState);
             startPromise.setError(status);
             return;
         }
@@ -729,7 +726,6 @@ Status IndexBuildsCoordinatorMongod::setCommitQuorum(OperationContext* opCtx,
     UUID collectionUUID = collection->uuid();
     std::shared_ptr<ReplIndexBuildState> replState;
     {
-        stdx::unique_lock<Latch> lk(_mutex);
         auto pred = [&](const auto& replState) {
             if (collectionUUID != replState.collectionUUID) {
                 return false;
@@ -741,7 +737,7 @@ Status IndexBuildsCoordinatorMongod::setCommitQuorum(OperationContext* opCtx,
             return std::equal(
                 replState.indexNames.begin(), replState.indexNames.end(), indexNames.begin());
         };
-        auto collIndexBuilds = _filterIndexBuilds_inlock(lk, pred);
+        auto collIndexBuilds = activeIndexBuilds.filterIndexBuilds(pred);
         if (collIndexBuilds.empty()) {
             return Status(ErrorCodes::IndexNotFound,
                           str::stream() << "Cannot find an index build on collection '" << nss

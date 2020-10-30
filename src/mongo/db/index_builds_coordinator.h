@@ -36,6 +36,7 @@
 #include <vector>
 
 #include "mongo/base/string_data.h"
+#include "mongo/db/active_index_builds.h"
 #include "mongo/db/catalog/collection_options.h"
 #include "mongo/db/catalog/commit_quorum_options.h"
 #include "mongo/db/catalog/index_build_oplog_entry.h"
@@ -488,12 +489,6 @@ private:
 
 protected:
     /**
-     * Unregisters the index build.
-     */
-    void _unregisterIndexBuild(WithLock lk,
-                               std::shared_ptr<ReplIndexBuildState> replIndexBuildState);
-
-    /**
      * Sets up the in-memory state of the index build. Validates index specs and filters out
      * existing indexes from the list of specs.
      *
@@ -772,10 +767,6 @@ protected:
     std::vector<std::shared_ptr<ReplIndexBuildState>> _filterIndexBuilds_inlock(
         WithLock lk, IndexBuildFilterFn indexBuildFilter) const;
 
-    void _awaitNoBgOpInProgForDb(stdx::unique_lock<Latch>& lk,
-                                 OperationContext* opCtx,
-                                 StringData db);
-
     // Protects the below state.
     mutable Mutex _mutex = MONGO_MAKE_LATCH("IndexBuildsCoordinator::_mutex");
 
@@ -793,6 +784,9 @@ protected:
     IndexBuildsManager _indexBuildsManager;
 
     bool _sleepForTest = false;
+
+    // Not protected by any sort of mutex
+    ActiveIndexBuilds activeIndexBuilds;
 };
 
 // These fail points are used to control index build progress. Declared here to be shared
