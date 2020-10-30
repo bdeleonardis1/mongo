@@ -13,7 +13,7 @@ coll.drop();
 
 const kNumDocs = 2000000;  // ~65 MB
 
-function loadCollectionWithDocs(collection, numDocs, unique) {
+function loadCollectionWithDocs(collection, numDocs) {
     const kMaxChunkSize = 100000;
 
     let inserted = 0;
