@@ -38,18 +38,22 @@
 
 namespace mongo {
 
+/**
+ * This is a helper class used by IndexBuildsCoodinator to safely manage the data structures
+ * that keep track of active index builds. It is owned by IndexBuildsCoordinator, and should
+ * only ever be used inside it.
+ */
 class ActiveIndexBuilds {
 
 public:
-    // Checks if _allIndexBuilds is empty without acquiring a lock. Should only be used when
-    // it is safe to check if the map is empty without a lock.
-    bool unlockedIsEmpty();
-
+    /**
+     * The following functions all have equivalent definitions in IndexBuildsCoordinator. The
+     * IndexBuildsCoordinator functions, forward to these functions. For descriptions of what they
+     * do, see IndexBuildsCoordinator.
+     */
     void waitForAllIndexBuildsToStopForShutdown(OperationContext* opCtx);
 
     void assertNoIndexBuildInProgress() const;
-
-    // TODO: gotta figure out assertNoIndexBuildInProgForCollection and _filter...
 
     void awaitIndexBuildFinished(OperationContext* opCtx, const UUID& buildUUID);
 
@@ -70,21 +74,43 @@ public:
 
     void awaitNoBgOpInProgForDb(OperationContext* opCtx, StringData db);
 
+    /**
+     * Checks if _allIndexBuilds is empty without acquiring a lock. Should only be used when
+     * it is safe to access the data structures without locking, like in ~IndexBuildsCoordinator.
+     */
+    bool unlockedIsEmpty();
 
-    /* Originally private, heavily refactored methods */
-    // TODO: add comments above these'
+    /**
+     * Unregisters the index build.
+     */
     void unregisterIndexBuild(IndexBuildsManager* indexBuildsManager,
                               std::shared_ptr<ReplIndexBuildState> replIndexBuildState);
 
+    /**
+     * Returns a list of index builds matching the criteria 'indexBuildFilter'.
+     */
     using IndexBuildFilterFn = std::function<bool(const ReplIndexBuildState& replState)>;
     std::vector<std::shared_ptr<ReplIndexBuildState>> filterIndexBuilds(
         IndexBuildFilterFn indexBuildFilter) const;
 
+    /**
+     * Registers an index build so that the rest of the system can discover it.
+     *
+     * If stopIndexBuildsOnNsOrDb has been called on the index build's collection or database, then
+     * an error will be returned.
+     */
     Status registerIndexBuild(std::shared_ptr<ReplIndexBuildState> replIndexBuildState);
 
-    /* Newly added functions */
+    /**
+     * When _sleepForTest is true, this function sleep for 100ms and then check the value
+     * of _sleep for test again.
+     */
     void sleepIfNecessary();
 
+    /**
+     * The following functions are relatively simple, but are necessary because
+     * ActiveIndexBuildsMongod does not have access to the _mutex or any of the state.
+     */
     void notifyAllIndexBuildFinished();
 
     void decrementNumActiveIndexBuildsAndNotifyOne();
@@ -98,9 +124,14 @@ public:
                                             const UUID& buildUUID);
 
 private:
+    /**
+     * Helper function for filterIndexBuilds. This function is necessary because some callers
+     * already hold the mutex before calling this function.
+     */
     std::vector<std::shared_ptr<ReplIndexBuildState>> _filterIndexBuilds_inlock(
         WithLock lk, IndexBuildFilterFn indexBuildFilter) const;
 
+    // Manages all of the below state
     mutable Mutex _mutex = MONGO_MAKE_LATCH("IndexBuildsCoordinator::_mutex");
 
     // Build UUID to index build information

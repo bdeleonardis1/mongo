@@ -1480,7 +1480,6 @@ void IndexBuildsCoordinator::assertNoIndexBuildInProgress() const {
     activeIndexBuilds.assertNoIndexBuildInProgress();
 }
 
-// TODO: should this fn get moved? Is there room to refactor so we don't need inProgForCollection?
 void IndexBuildsCoordinator::assertNoIndexBuildInProgForCollection(
     const UUID& collectionUUID) const {
     uassert(ErrorCodes::BackgroundOperationInProgressForNamespace,
