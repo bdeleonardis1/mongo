@@ -761,7 +761,7 @@ protected:
     IndexBuildsManager _indexBuildsManager;
 
     // Maintains data structures relating to activeIndexBuilds. Thread safe, unless a specific
-    // function specifies otherwise
+    // function specifies otherwise.
     ActiveIndexBuilds activeIndexBuilds;
 };
 
