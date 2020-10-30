@@ -91,6 +91,11 @@ public:
 
     void incrementNumActiveIndexBuilds();
 
+    void ensureActiveIndexBuildsLessThanMax(int maxActiveBuilds,
+                                            OperationContext* opCtx,
+                                            CollectionUUID collectionUUID,
+                                            const std::vector<BSONObj>& specs,
+                                            const UUID& buildUUID);
 
 private:
     std::vector<std::shared_ptr<ReplIndexBuildState>> _filterIndexBuilds_inlock(
@@ -112,6 +117,6 @@ private:
 
     // The following variables are used by index_builds_coordinator_mongod and require _mutex
     int _numActiveIndexBuilds = 0;
-    std::condition_variable _indexBuildFinished;
+    stdx::condition_variable _indexBuildFinished;
 };
 }  // namespace mongo

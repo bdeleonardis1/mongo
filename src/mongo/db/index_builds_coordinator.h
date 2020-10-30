@@ -757,23 +757,8 @@ protected:
      */
     using IndexBuildFilterFn = std::function<bool(const ReplIndexBuildState& replState)>;
 
-    // Protects the below state.
-    mutable Mutex _mutex = MONGO_MAKE_LATCH("IndexBuildsCoordinator::_mutex");
-
-    // Build UUID to index build information map.
-    stdx::unordered_map<UUID, std::shared_ptr<ReplIndexBuildState>, UUID::Hash> _allIndexBuilds;
-
-    // Waiters are notified whenever one of the three maps above has something added or removed.
-    stdx::condition_variable _indexBuildsCondVar;
-
-    // Generation counter of completed index builds. Used in conjuction with the condition variable
-    // to receive notifications when an index build completes.
-    uint32_t _indexBuildsCompletedGen;
-
     // Handles actually building the indexes.
     IndexBuildsManager _indexBuildsManager;
-
-    bool _sleepForTest = false;
 
     // Not protected by any sort of mutex
     ActiveIndexBuilds activeIndexBuilds;

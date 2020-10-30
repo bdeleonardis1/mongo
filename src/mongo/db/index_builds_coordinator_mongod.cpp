@@ -179,24 +179,9 @@ IndexBuildsCoordinatorMongod::_startIndexBuild(OperationContext* opCtx,
                         replCoord->canAcceptWritesFor(opCtx, nssOrUuid));
             }
 
-            stdx::unique_lock<Latch> lk(_mutex);
-            opCtx->waitForConditionOrInterrupt(_indexBuildFinished, lk, [&] {
-                const int maxActiveBuilds = maxNumActiveUserIndexBuilds.load();
-                if (_numActiveIndexBuilds < maxActiveBuilds) {
-                    _numActiveIndexBuilds++;
-                    return true;
-                }
-
-                LOGV2(4715500,
-                      "Too many index builds running simultaneously, waiting until the number of "
-                      "active index builds is below the threshold",
-                      "numActiveIndexBuilds"_attr = _numActiveIndexBuilds,
-                      "maxNumActiveUserIndexBuilds"_attr = maxActiveBuilds,
-                      "indexSpecs"_attr = specs,
-                      "buildUUID"_attr = buildUUID,
-                      "collectionUUID"_attr = collectionUUID);
-                return false;
-            });
+            const int maxActiveBuilds = maxNumActiveUserIndexBuilds.load();
+            activeIndexBuilds.ensureActiveIndexBuildsLessThanMax(
+                maxActiveBuilds, opCtx, collectionUUID, specs, buildUUID);
         } else {
             // System index builds have no limit and never wait, but do consume a slot.
             activeIndexBuilds.incrementNumActiveIndexBuilds();

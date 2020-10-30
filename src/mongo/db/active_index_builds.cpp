@@ -230,4 +230,28 @@ void ActiveIndexBuilds::incrementNumActiveIndexBuilds() {
     stdx::unique_lock<Latch> lk(_mutex);
     _numActiveIndexBuilds++;
 }
+
+void ActiveIndexBuilds::ensureActiveIndexBuildsLessThanMax(int maxActiveBuilds,
+                                                           OperationContext* opCtx,
+                                                           CollectionUUID collectionUUID,
+                                                           const std::vector<BSONObj>& specs,
+                                                           const UUID& buildUUID) {
+    stdx::unique_lock<Latch> lk(_mutex);
+    opCtx->waitForConditionOrInterrupt(_indexBuildFinished, lk, [&] {
+        if (_numActiveIndexBuilds < maxActiveBuilds) {
+            _numActiveIndexBuilds++;
+            return true;
+        }
+
+        LOGV2(4715500,
+              "Too many index builds running simultaneously, waiting until the number of "
+              "active index builds is below the threshold",
+              "numActiveIndexBuilds"_attr = _numActiveIndexBuilds,
+              "maxNumActiveUserIndexBuilds"_attr = maxActiveBuilds,
+              "indexSpecs"_attr = specs,
+              "buildUUID"_attr = buildUUID,
+              "collectionUUID"_attr = collectionUUID);
+        return false;
+    });
+}
 }  // namespace mongo

@@ -179,12 +179,6 @@ private:
 
     // Thread pool on which index builds are run.
     ThreadPool _threadPool;
-
-    // Protected by _mutex.
-    int _numActiveIndexBuilds = 0;
-
-    // Condition signalled to indicate that an index build thread finished executing.
-    stdx::condition_variable _indexBuildFinished;
 };
 
 }  // namespace mongo
