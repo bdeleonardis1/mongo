@@ -617,8 +617,7 @@ Status IndexBuildsCoordinator::_startIndexBuildForRecovery(OperationContext* opC
             buildUUID, collection->uuid(), dbName, specs, protocol);
 
         Status status = [&]() {
-            stdx::unique_lock<Latch> lk(_mutex);
-            return _registerIndexBuild(lk, replIndexBuildState);
+            return activeIndexBuilds.registerIndexBuild(replIndexBuildState);
         }();
         if (!status.isOK()) {
             return status;
@@ -702,10 +701,7 @@ Status IndexBuildsCoordinator::_setUpResumeIndexBuild(OperationContext* opCtx,
     auto replIndexBuildState = std::make_shared<ReplIndexBuildState>(
         buildUUID, collection->uuid(), dbName, specs, protocol);
 
-    Status status = [&]() {
-        stdx::unique_lock<Latch> lk(_mutex);
-        return _registerIndexBuild(lk, replIndexBuildState);
-    }();
+    Status status = [&]() { return activeIndexBuilds.registerIndexBuild(replIndexBuildState); }();
     if (!status.isOK()) {
         return status;
     }
@@ -1661,32 +1657,6 @@ void IndexBuildsCoordinator::updateCurOpOpDescription(OperationContext* opCtx,
     curOp->ensureStarted();
 }
 
-Status IndexBuildsCoordinator::_registerIndexBuild(
-    WithLock lk, std::shared_ptr<ReplIndexBuildState> replIndexBuildState) {
-    // Check whether any indexes are already being built with the same index name(s). (Duplicate
-    // specs will be discovered by the index builder.)
-    auto pred = [&](const auto& replState) {
-        return replIndexBuildState->collectionUUID == replState.collectionUUID;
-    };
-    auto collIndexBuilds = _filterIndexBuilds_inlock(lk, pred);
-    for (auto existingIndexBuild : collIndexBuilds) {
-        for (const auto& name : replIndexBuildState->indexNames) {
-            if (existingIndexBuild->indexNames.end() !=
-                std::find(existingIndexBuild->indexNames.begin(),
-                          existingIndexBuild->indexNames.end(),
-                          name)) {
-                return existingIndexBuild->onConflictWithNewIndexBuild(*replIndexBuildState, name);
-            }
-        }
-    }
-
-    invariant(_allIndexBuilds.emplace(replIndexBuildState->buildUUID, replIndexBuildState).second);
-
-    _indexBuildsCondVar.notify_all();
-
-    return Status::OK();
-}
-
 Status IndexBuildsCoordinator::_setUpIndexBuildForTwoPhaseRecovery(
     OperationContext* opCtx,
     StringData dbName,
@@ -1731,11 +1701,6 @@ IndexBuildsCoordinator::_filterSpecsAndRegisterBuild(OperationContext* opCtx,
     // This check is for optimization purposes only as since this lock is released after this,
     // and is acquired again when we build the index in _setUpIndexBuild.
     CollectionShardingState::get(opCtx, collection.get()->ns())->checkShardVersionOrThrow(opCtx);
-
-    // Lock from when we ascertain what indexes to build through to when the build is registered
-    // on the Coordinator and persistedly set up in the catalog. This serializes setting up an
-    // index build so that no attempts are made to register the same build twice.
-    stdx::unique_lock<Latch> lk(_mutex);
 
     std::vector<BSONObj> filteredSpecs;
     try {
@@ -1787,7 +1752,7 @@ IndexBuildsCoordinator::_filterSpecsAndRegisterBuild(OperationContext* opCtx,
         buildUUID, collectionUUID, dbName.toString(), filteredSpecs, protocol);
     replIndexBuildState->stats.numIndexesBefore = getNumIndexesTotal(opCtx, collection.get());
 
-    auto status = _registerIndexBuild(lk, replIndexBuildState);
+    auto status = activeIndexBuilds.registerIndexBuild(replIndexBuildState);
     if (!status.isOK()) {
         return status;
     }
@@ -1973,14 +1938,7 @@ void IndexBuildsCoordinator::_runIndexBuild(
     const UUID& buildUUID,
     const IndexBuildOptions& indexBuildOptions,
     const boost::optional<ResumeIndexInfo>& resumeInfo) noexcept {
-    {
-        stdx::unique_lock<Latch> lk(_mutex);
-        while (_sleepForTest) {
-            lk.unlock();
-            sleepmillis(100);
-            lk.lock();
-        }
-    }
+    { activeIndexBuilds.sleepIfNecessary(); }  // TODO: can probably remove the braces
 
     // If the index build does not exist, do not continue building the index. This may happen if an
     // ignorable indexing error occurred during setup. The promise will have been fulfilled, but the
@@ -2725,19 +2683,6 @@ StatusWith<std::shared_ptr<ReplIndexBuildState>> IndexBuildsCoordinator::_getInd
 std::vector<std::shared_ptr<ReplIndexBuildState>> IndexBuildsCoordinator::_getIndexBuilds() const {
     auto filter = [](const auto& replState) { return true; };
     return activeIndexBuilds.filterIndexBuilds(filter);
-}
-
-std::vector<std::shared_ptr<ReplIndexBuildState>> IndexBuildsCoordinator::_filterIndexBuilds_inlock(
-    WithLock lk, IndexBuildFilterFn indexBuildFilter) const {
-    std::vector<std::shared_ptr<ReplIndexBuildState>> indexBuilds;
-    for (auto pair : _allIndexBuilds) {
-        auto replState = pair.second;
-        if (!indexBuildFilter(*replState)) {
-            continue;
-        }
-        indexBuilds.push_back(replState);
-    }
-    return indexBuilds;
 }
 
 int IndexBuildsCoordinator::getNumIndexesTotal(OperationContext* opCtx,

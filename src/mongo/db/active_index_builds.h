@@ -72,12 +72,24 @@ public:
 
 
     /* Originally private, heavily refactored methods */
+    // TODO: add comments above these'
     void unregisterIndexBuild(IndexBuildsManager* indexBuildsManager,
                               std::shared_ptr<ReplIndexBuildState> replIndexBuildState);
 
     using IndexBuildFilterFn = std::function<bool(const ReplIndexBuildState& replState)>;
     std::vector<std::shared_ptr<ReplIndexBuildState>> filterIndexBuilds(
         IndexBuildFilterFn indexBuildFilter) const;
+
+    Status registerIndexBuild(std::shared_ptr<ReplIndexBuildState> replIndexBuildState);
+
+    /* Newly added functions */
+    void sleepIfNecessary();
+
+    void notifyAllIndexBuildFinished();
+
+    void decrementNumActiveIndexBuildsAndNotifyOne();
+
+    void incrementNumActiveIndexBuilds();
 
 
 private:
@@ -97,5 +109,9 @@ private:
     uint32_t _indexBuildsCompletedGen;
 
     bool _sleepForTest = false;
+
+    // The following variables are used by index_builds_coordinator_mongod and require _mutex
+    int _numActiveIndexBuilds = 0;
+    std::condition_variable _indexBuildFinished;
 };
 }  // namespace mongo

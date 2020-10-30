@@ -178,4 +178,56 @@ void ActiveIndexBuilds::awaitNoBgOpInProgForDb(OperationContext* opCtx, StringDa
     };
     _indexBuildsCondVar.wait(lk, pred);
 }
+
+Status ActiveIndexBuilds::registerIndexBuild(
+    std::shared_ptr<ReplIndexBuildState> replIndexBuildState) {
+
+    stdx::unique_lock<Latch> lk(_mutex);
+    // Check whether any indexes are already being built with the same index name(s). (Duplicate
+    // specs will be discovered by the index builder.)
+    auto pred = [&](const auto& replState) {
+        return replIndexBuildState->collectionUUID == replState.collectionUUID;
+    };
+    auto collIndexBuilds = _filterIndexBuilds_inlock(lk, pred);
+    for (auto existingIndexBuild : collIndexBuilds) {
+        for (const auto& name : replIndexBuildState->indexNames) {
+            if (existingIndexBuild->indexNames.end() !=
+                std::find(existingIndexBuild->indexNames.begin(),
+                          existingIndexBuild->indexNames.end(),
+                          name)) {
+                return existingIndexBuild->onConflictWithNewIndexBuild(*replIndexBuildState, name);
+            }
+        }
+    }
+
+    invariant(_allIndexBuilds.emplace(replIndexBuildState->buildUUID, replIndexBuildState).second);
+
+    _indexBuildsCondVar.notify_all();
+
+    return Status::OK();
+}
+
+void ActiveIndexBuilds::sleepIfNecessary() {
+    stdx::unique_lock<Latch> lk(_mutex);
+    while (_sleepForTest) {
+        lk.unlock();
+        sleepmillis(100);
+        lk.lock();
+    }
+}
+
+void ActiveIndexBuilds::notifyAllIndexBuildFinished() {
+    _indexBuildFinished.notify_all();
+}
+
+void ActiveIndexBuilds::decrementNumActiveIndexBuildsAndNotifyOne() {
+    stdx::unique_lock<Latch> lk(_mutex);
+    _numActiveIndexBuilds--;
+    _indexBuildFinished.notify_one();
+}
+
+void ActiveIndexBuilds::incrementNumActiveIndexBuilds() {
+    stdx::unique_lock<Latch> lk(_mutex);
+    _numActiveIndexBuilds++;
+}
 }  // namespace mongo

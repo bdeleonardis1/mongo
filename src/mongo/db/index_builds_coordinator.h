@@ -468,14 +468,6 @@ public:
 
 private:
     /**
-     * Registers an index build so that the rest of the system can discover it.
-     *
-     * If stopIndexBuildsOnNsOrDb has been called on the index build's collection or database, then
-     * an error will be returned.
-     */
-    Status _registerIndexBuild(WithLock, std::shared_ptr<ReplIndexBuildState> replIndexBuildState);
-
-    /**
      * Sets up the in-memory and durable state of the index build.
      *
      * This function should only be called when in recovery mode, because we drop and replace
@@ -764,8 +756,6 @@ protected:
      * Requires caller to lock '_mutex'.
      */
     using IndexBuildFilterFn = std::function<bool(const ReplIndexBuildState& replState)>;
-    std::vector<std::shared_ptr<ReplIndexBuildState>> _filterIndexBuilds_inlock(
-        WithLock lk, IndexBuildFilterFn indexBuildFilter) const;
 
     // Protects the below state.
     mutable Mutex _mutex = MONGO_MAKE_LATCH("IndexBuildsCoordinator::_mutex");

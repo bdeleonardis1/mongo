@@ -99,7 +99,7 @@ IndexBuildsCoordinatorMongod::IndexBuildsCoordinatorMongod()
         IDLServerParameterWithStorage<ServerParameterType::kStartupAndRuntime, AtomicWord<int>>*>(
         serverParam)
         ->setOnUpdate([this](const int) -> Status {
-            _indexBuildFinished.notify_all();
+            activeIndexBuilds.notifyAllIndexBuildFinished();
             return Status::OK();
         });
 }
@@ -199,16 +199,12 @@ IndexBuildsCoordinatorMongod::_startIndexBuild(OperationContext* opCtx,
             });
         } else {
             // System index builds have no limit and never wait, but do consume a slot.
-            stdx::unique_lock<Latch> lk(_mutex);
-            _numActiveIndexBuilds++;
+            activeIndexBuilds.incrementNumActiveIndexBuilds();
         }
     }
 
-    auto onScopeExitGuard = makeGuard([&] {
-        stdx::unique_lock<Latch> lk(_mutex);
-        _numActiveIndexBuilds--;
-        _indexBuildFinished.notify_one();
-    });
+    auto onScopeExitGuard =
+        makeGuard([&] { activeIndexBuilds.decrementNumActiveIndexBuildsAndNotifyOne(); });
 
     if (indexBuildOptions.applicationMode == ApplicationMode::kStartupRepair) {
         // Two phase index build recovery goes though a different set-up procedure because we will
@@ -287,11 +283,8 @@ IndexBuildsCoordinatorMongod::_startIndexBuild(OperationContext* opCtx,
                           shardVersion,
                           dbVersion,
                           resumeInfo](auto status) mutable noexcept {
-        auto onScopeExitGuard = makeGuard([&] {
-            stdx::unique_lock<Latch> lk(_mutex);
-            _numActiveIndexBuilds--;
-            _indexBuildFinished.notify_one();
-        });
+        auto onScopeExitGuard =
+            makeGuard([&] { activeIndexBuilds.decrementNumActiveIndexBuildsAndNotifyOne(); });
 
         // Clean up if we failed to schedule the task.
         if (!status.isOK()) {
