@@ -8,14 +8,26 @@
 (function() {
 "use strict";
 
-load("jstests/core/utils.js");
-
 let coll = db.stress_test_unique_index_notunique;
 coll.drop();
 
 const kNumDocs = 2000000;  // ~65 MB
 
-loadCollectionWithDocs(coll, kNumDocs, false);
+function loadCollectionWithDocs(collection, numDocs, unique) {
+    const kMaxChunkSize = 100000;
+
+    let inserted = 0;
+    while (inserted < numDocs) {
+        let docs = [];
+        for (let i = 0; i < kMaxChunkSize && inserted + docs.length < numDocs; i++) {
+            docs.push({"a": 0});
+        }
+        collection.insertMany(docs);
+        inserted += docs.length;
+    }
+}
+
+loadCollectionWithDocs(coll, kNumDocs);
 
 assert.commandFailedWithCode(coll.createIndex({a: 1}, {unique: true}), ErrorCodes.DuplicateKey);
 })();
