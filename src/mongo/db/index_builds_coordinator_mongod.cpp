@@ -255,19 +255,21 @@ IndexBuildsCoordinatorMongod::_startIndexBuild(OperationContext* opCtx,
     // The thread pool task will be responsible for signalling the condition variable when the index
     // build thread is done running.
     onScopeExitGuard.dismiss();
-    _threadPool.schedule([this,
-                          buildUUID,
-                          dbName,
-                          nss,
-                          indexBuildOptions,
-                          logicalOp,
-                          opDesc,
-                          replState,
-                          startPromise = std::move(startPromise),
-                          startTimestamp,
-                          shardVersion,
-                          dbVersion,
-                          resumeInfo](auto status) mutable noexcept {
+    _threadPool.schedule([
+        this,
+        buildUUID,
+        dbName,
+        nss,
+        indexBuildOptions,
+        logicalOp,
+        opDesc,
+        replState,
+        startPromise = std::move(startPromise),
+        startTimestamp,
+        shardVersion,
+        dbVersion,
+        resumeInfo
+    ](auto status) mutable noexcept {
         auto onScopeExitGuard =
             makeGuard([&] { activeIndexBuilds.decrementNumActiveIndexBuildsAndNotifyOne(); });
 

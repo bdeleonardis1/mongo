@@ -760,7 +760,8 @@ protected:
     // Handles actually building the indexes.
     IndexBuildsManager _indexBuildsManager;
 
-    // Not protected by any sort of mutex
+    // Maintains data structures relating to activeIndexBuilds. Thread safe, unless a specific
+    // function specifies otherwise
     ActiveIndexBuilds activeIndexBuilds;
 };
 

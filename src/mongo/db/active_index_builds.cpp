@@ -119,8 +119,6 @@ void ActiveIndexBuilds::awaitNoIndexBuildInProgressForCollection(OperationContex
     _indexBuildsCondVar.wait(lk, pred);
 }
 
-
-// Originally private
 StatusWith<std::shared_ptr<ReplIndexBuildState>> ActiveIndexBuilds::getIndexBuild(
     const UUID& buildUUID) const {
     stdx::unique_lock<Latch> lk(_mutex);

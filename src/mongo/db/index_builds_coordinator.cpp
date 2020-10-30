@@ -701,7 +701,7 @@ Status IndexBuildsCoordinator::_setUpResumeIndexBuild(OperationContext* opCtx,
     auto replIndexBuildState = std::make_shared<ReplIndexBuildState>(
         buildUUID, collection->uuid(), dbName, specs, protocol);
 
-    Status status = [&]() { return activeIndexBuilds.registerIndexBuild(replIndexBuildState); }();
+    Status status = activeIndexBuilds.registerIndexBuild(replIndexBuildState);
     if (!status.isOK()) {
         return status;
     }
@@ -1169,7 +1169,6 @@ bool IndexBuildsCoordinator::abortIndexBuildByBuildUUID(OperationContext* opCtx,
         }
 
         activeIndexBuilds.unregisterIndexBuild(&_indexBuildsManager, replState);
-
         break;
     }
 
@@ -1905,7 +1904,6 @@ Status IndexBuildsCoordinator::_setUpIndexBuild(OperationContext* opCtx,
     } catch (const DBException& ex) {
         activeIndexBuilds.unregisterIndexBuild(&_indexBuildsManager, replState);
 
-
         return ex.toStatus();
     }
 
@@ -1917,7 +1915,6 @@ Status IndexBuildsCoordinator::_setUpIndexBuild(OperationContext* opCtx,
 
     // Unregister the index build before setting the promise, so callers do not see the build again.
     activeIndexBuilds.unregisterIndexBuild(&_indexBuildsManager, replState);
-
 
     // The requested index (specs) are already built or are being built. Return success
     // early (this is v4.0 behavior compatible).
@@ -1937,7 +1934,7 @@ void IndexBuildsCoordinator::_runIndexBuild(
     const UUID& buildUUID,
     const IndexBuildOptions& indexBuildOptions,
     const boost::optional<ResumeIndexInfo>& resumeInfo) noexcept {
-    { activeIndexBuilds.sleepIfNecessary(); }  // TODO: can probably remove the braces
+    activeIndexBuilds.sleepIfNecessary();
 
     // If the index build does not exist, do not continue building the index. This may happen if an
     // ignorable indexing error occurred during setup. The promise will have been fulfilled, but the
@@ -1977,6 +1974,7 @@ void IndexBuildsCoordinator::_runIndexBuild(
     // Ensure the index build is unregistered from the Coordinator and the Promise is set with
     // the build's result so that callers are notified of the outcome.
     if (status.isOK()) {
+        // Unregister first so that when we fulfill the future, the build is not observed as active.
         activeIndexBuilds.unregisterIndexBuild(&_indexBuildsManager, replState);
         replState->sharedPromise.emplaceValue(replState->stats);
         return;
@@ -2675,7 +2673,6 @@ StatusWith<std::pair<long long, long long>> IndexBuildsCoordinator::_runIndexReb
 
 StatusWith<std::shared_ptr<ReplIndexBuildState>> IndexBuildsCoordinator::_getIndexBuild(
     const UUID& buildUUID) const {
-
     return activeIndexBuilds.getIndexBuild(buildUUID);
 }
 

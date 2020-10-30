@@ -39,7 +39,7 @@
 namespace mongo {
 
 /**
- * This is a helper class used by IndexBuildsCoodinator to safely manage the data structures
+ * This is a helper class used by IndexBuildsCoordinator to safely manage the data structures
  * that keep track of active index builds. It is owned by IndexBuildsCoordinator, and should
  * only ever be used inside it.
  */
@@ -48,7 +48,7 @@ class ActiveIndexBuilds {
 public:
     /**
      * The following functions all have equivalent definitions in IndexBuildsCoordinator. The
-     * IndexBuildsCoordinator functions, forward to these functions. For descriptions of what they
+     * IndexBuildsCoordinator functions forward to these functions. For descriptions of what they
      * do, see IndexBuildsCoordinator.
      */
     void waitForAllIndexBuildsToStopForShutdown(OperationContext* opCtx);
@@ -102,8 +102,8 @@ public:
     Status registerIndexBuild(std::shared_ptr<ReplIndexBuildState> replIndexBuildState);
 
     /**
-     * When _sleepForTest is true, this function sleep for 100ms and then check the value
-     * of _sleep for test again.
+     * When _sleepForTest is true, this function will sleep for 100ms and then check the value
+     * of _sleepForTest again.
      */
     void sleepIfNecessary();
 
