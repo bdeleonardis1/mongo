@@ -616,9 +616,7 @@ Status IndexBuildsCoordinator::_startIndexBuildForRecovery(OperationContext* opC
         auto replIndexBuildState = std::make_shared<ReplIndexBuildState>(
             buildUUID, collection->uuid(), dbName, specs, protocol);
 
-        Status status = [&]() {
-            return activeIndexBuilds.registerIndexBuild(replIndexBuildState);
-        }();
+        Status status = activeIndexBuilds.registerIndexBuild(replIndexBuildState);
         if (!status.isOK()) {
             return status;
         }

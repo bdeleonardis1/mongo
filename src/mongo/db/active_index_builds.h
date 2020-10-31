@@ -146,8 +146,10 @@ private:
 
     bool _sleepForTest = false;
 
-    // The following variables are used by index_builds_coordinator_mongod and require _mutex
+    // The following variables are used by index_builds_coordinator_mongod and are protected by
+    // _mutex
     int _numActiveIndexBuilds = 0;
+    // Condition signalled to indicate that an index build thread finished executing
     stdx::condition_variable _indexBuildFinished;
 };
 }  // namespace mongo
