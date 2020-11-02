@@ -195,6 +195,8 @@ PlanStage::StageState DeleteStage::doWork(WorkingSetID* out) {
             WriteUnitOfWork wunit(opCtx());
 
             Snapshotted<Document> doc = member->doc;
+            // std::cerr << "doc.value() " << doc.value() << "\n";
+            // std::cerr << "doc.value().toBson()" << doc.value().toBson() << "\n";
             Snapshotted<BSONObj> obj = Snapshotted(doc.snapshotId(), doc.value().toBson());
             collection()->deleteDocument(opCtx(),
                                          obj,
