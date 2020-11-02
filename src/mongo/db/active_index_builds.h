@@ -117,7 +117,7 @@ private:
     // Build UUID to index build information
     stdx::unordered_map<UUID, std::shared_ptr<ReplIndexBuildState>, UUID::Hash> _allIndexBuilds;
 
-    // Waiters are notified whenever _allIndexBuilds something added or removed.
+    // Waiters are notified whenever _allIndexBuilds has something added or removed.
     stdx::condition_variable _indexBuildsCondVar;
 
     // Generation counter of completed index builds. Used in conjuction with the condition
