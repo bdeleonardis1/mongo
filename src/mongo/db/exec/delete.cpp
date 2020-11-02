@@ -180,6 +180,9 @@ PlanStage::StageState DeleteStage::doWork(WorkingSetID* out) {
         uassertStatusOK(_params->removeSaver->goingToDelete(member->doc.value().toBson()));
     }
 
+    Snapshotted<Document> doc = member->doc;
+    Snapshotted<BSONObj> obj = Snapshotted(doc.snapshotId(), doc.value().getOwned().toBson());
+
     // TODO: Do we want to buffer docs and delete them in a group rather than saving/restoring state
     // repeatedly?
 
@@ -194,10 +197,7 @@ PlanStage::StageState DeleteStage::doWork(WorkingSetID* out) {
         try {
             WriteUnitOfWork wunit(opCtx());
 
-            Snapshotted<Document> doc = member->doc;
-            // std::cerr << "doc.value() " << doc.value() << "\n";
-            // std::cerr << "doc.value().toBson()" << doc.value().toBson() << "\n";
-            Snapshotted<BSONObj> obj = Snapshotted(doc.snapshotId(), doc.value().toBson());
+
             collection()->deleteDocument(opCtx(),
                                          obj,
                                          _params->stmtId,
