@@ -35,6 +35,7 @@
 
 #include <memory>
 
+#include "mongo/bson/bsonobj.h"
 #include "mongo/db/catalog/collection.h"
 #include "mongo/db/concurrency/write_conflict_exception.h"
 #include "mongo/db/curop.h"
@@ -192,7 +193,11 @@ PlanStage::StageState DeleteStage::doWork(WorkingSetID* out) {
     if (!_params->isExplain) {
         try {
             WriteUnitOfWork wunit(opCtx());
+
+            Snapshotted<Document> doc = member->doc;
+            Snapshotted<BSONObj> obj = Snapshotted(doc.snapshotId(), doc.value().toBson());
             collection()->deleteDocument(opCtx(),
+                                         obj,
                                          _params->stmtId,
                                          recordId,
                                          _params->opDebug,

@@ -343,6 +343,16 @@ public:
                                 const bool noWarn = false,
                                 StoreDeletedDoc storeDeletedDoc = StoreDeletedDoc::Off) const = 0;
 
+    // TODO: add comment
+    virtual void deleteDocument(OperationContext* const opCtx,
+                                Snapshotted<BSONObj> doc,
+                                StmtId stmtId,
+                                RecordId loc,
+                                OpDebug* const opDebug,
+                                const bool fromMigrate = false,
+                                const bool noWarn = false,
+                                StoreDeletedDoc storeDeletedDoc = StoreDeletedDoc::Off) const = 0;
+
     /*
      * Inserts all documents inside one WUOW.
      * Caller should ensure vector is appropriately sized for this.

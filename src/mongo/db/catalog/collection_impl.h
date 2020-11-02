@@ -120,6 +120,7 @@ public:
     std::unique_ptr<SeekableRecordCursor> getCursor(OperationContext* opCtx,
                                                     bool forward = true) const final;
 
+
     /**
      * Deletes the document with the given RecordId from the collection.
      *
@@ -137,6 +138,16 @@ public:
      */
     void deleteDocument(
         OperationContext* opCtx,
+        StmtId stmtId,
+        RecordId loc,
+        OpDebug* opDebug,
+        bool fromMigrate = false,
+        bool noWarn = false,
+        Collection::StoreDeletedDoc storeDeletedDoc = Collection::StoreDeletedDoc::Off) const final;
+
+    void deleteDocument(
+        OperationContext* opCtx,
+        Snapshotted<BSONObj> doc,
         StmtId stmtId,
         RecordId loc,
         OpDebug* opDebug,
