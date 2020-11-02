@@ -180,6 +180,7 @@ private:
     // Thread pool on which index builds are run.
     ThreadPool _threadPool;
 
+    // Manages the below state.
     mutable Mutex _mutex = MONGO_MAKE_LATCH("IndexBuildsCoordinatorMongod::_mutex");
 
     // Protected by _mutex.
