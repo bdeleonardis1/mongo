@@ -1,5 +1,5 @@
 /**
- *    Copyright (C) 2018-present MongoDB, Inc.
+ *    Copyright (C) 2020-present MongoDB, Inc.
  *
  *    This program is free software: you can redistribute it and/or modify
  *    it under the terms of the Server Side Public License, version 1,
@@ -47,6 +47,11 @@ class ActiveIndexBuilds {
 
 public:
     /**
+     * Invariants that there are no index builds in-progress.
+     */
+    ~ActiveIndexBuilds();
+
+    /**
      * The following functions all have equivalent definitions in IndexBuildsCoordinator. The
      * IndexBuildsCoordinator functions forward to these functions. For descriptions of what they
      * do, see IndexBuildsCoordinator.
@@ -75,12 +80,6 @@ public:
     void awaitNoBgOpInProgForDb(OperationContext* opCtx, StringData db);
 
     /**
-     * Checks if _allIndexBuilds is empty without acquiring a lock. Should only be used when
-     * it is safe to access the data structures without locking, like in ~IndexBuildsCoordinator.
-     */
-    bool unlockedIsEmpty();
-
-    /**
      * Unregisters the index build.
      */
     void unregisterIndexBuild(IndexBuildsManager* indexBuildsManager,
@@ -95,9 +94,6 @@ public:
 
     /**
      * Registers an index build so that the rest of the system can discover it.
-     *
-     * If stopIndexBuildsOnNsOrDb has been called on the index build's collection or database, then
-     * an error will be returned.
      */
     Status registerIndexBuild(std::shared_ptr<ReplIndexBuildState> replIndexBuildState);
 
@@ -105,23 +101,7 @@ public:
      * When _sleepForTest is true, this function will sleep for 100ms and then check the value
      * of _sleepForTest again.
      */
-    void sleepIfNecessary();
-
-    /**
-     * The following functions are relatively simple, but are necessary because
-     * ActiveIndexBuildsMongod does not have access to the _mutex or any of the state.
-     */
-    void notifyAllIndexBuildFinished();
-
-    void decrementNumActiveIndexBuildsAndNotifyOne();
-
-    void incrementNumActiveIndexBuilds();
-
-    void ensureActiveIndexBuildsLessThanMax(int maxActiveBuilds,
-                                            OperationContext* opCtx,
-                                            CollectionUUID collectionUUID,
-                                            const std::vector<BSONObj>& specs,
-                                            const UUID& buildUUID);
+    void sleepIfNecessary_forTest();
 
 private:
     /**
@@ -132,24 +112,18 @@ private:
         WithLock lk, IndexBuildFilterFn indexBuildFilter) const;
 
     // Manages all of the below state
-    mutable Mutex _mutex = MONGO_MAKE_LATCH("IndexBuildsCoordinator::_mutex");
+    mutable Mutex _mutex = MONGO_MAKE_LATCH("ActiveIndexBuilds::_mutex");
 
     // Build UUID to index build information
     stdx::unordered_map<UUID, std::shared_ptr<ReplIndexBuildState>, UUID::Hash> _allIndexBuilds;
 
-    // Waiters are notified whenever one of the three maps above has something added or removed.
+    // Waiters are notified whenever _allIndexBuilds something added or removed.
     stdx::condition_variable _indexBuildsCondVar;
 
     // Generation counter of completed index builds. Used in conjuction with the condition
     // variable to receive notifications when an index build completes.
-    uint32_t _indexBuildsCompletedGen;
+    uint32_t _indexBuildsCompletedGen = 0;
 
     bool _sleepForTest = false;
-
-    // The following variables are used by index_builds_coordinator_mongod and are protected by
-    // _mutex
-    int _numActiveIndexBuilds = 0;
-    // Condition signalled to indicate that an index build thread finished executing
-    stdx::condition_variable _indexBuildFinished;
 };
 }  // namespace mongo

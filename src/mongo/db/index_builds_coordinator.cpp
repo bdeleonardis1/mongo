@@ -479,10 +479,6 @@ IndexBuildsCoordinator* IndexBuildsCoordinator::get(OperationContext* OperationC
     return get(OperationContext->getServiceContext());
 }
 
-IndexBuildsCoordinator::~IndexBuildsCoordinator() {
-    invariant(activeIndexBuilds.unlockedIsEmpty());
-}
-
 std::vector<std::string> IndexBuildsCoordinator::extractIndexNames(
     const std::vector<BSONObj>& specs) {
     std::vector<std::string> indexNames;
@@ -1932,7 +1928,7 @@ void IndexBuildsCoordinator::_runIndexBuild(
     const UUID& buildUUID,
     const IndexBuildOptions& indexBuildOptions,
     const boost::optional<ResumeIndexInfo>& resumeInfo) noexcept {
-    activeIndexBuilds.sleepIfNecessary();
+    activeIndexBuilds.sleepIfNecessary_forTest();
 
     // If the index build does not exist, do not continue building the index. This may happen if an
     // ignorable indexing error occurred during setup. The promise will have been fulfilled, but the

@@ -91,10 +91,7 @@ public:
         ApplicationMode applicationMode = ApplicationMode::kNormal;
     };
 
-    /**
-     * Invariants that there are no index builds in-progress.
-     */
-    virtual ~IndexBuildsCoordinator();
+    virtual ~IndexBuildsCoordinator() = default;
 
     /**
      * Executes tasks that must be done prior to destruction of the instance.

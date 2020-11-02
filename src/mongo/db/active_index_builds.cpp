@@ -1,5 +1,5 @@
 /**
- *    Copyright (C) 2018-present MongoDB, Inc.
+ *    Copyright (C) 2020-present MongoDB, Inc.
  *
  *    This program is free software: you can redistribute it and/or modify
  *    it under the terms of the Server Side Public License, version 1,
@@ -36,8 +36,8 @@
 
 namespace mongo {
 
-bool ActiveIndexBuilds::unlockedIsEmpty() {
-    return _allIndexBuilds.empty();
+ActiveIndexBuilds::~ActiveIndexBuilds() {
+    invariant(_allIndexBuilds.empty());
 }
 
 void ActiveIndexBuilds::waitForAllIndexBuildsToStopForShutdown(OperationContext* opCtx) {
@@ -205,51 +205,12 @@ Status ActiveIndexBuilds::registerIndexBuild(
     return Status::OK();
 }
 
-void ActiveIndexBuilds::sleepIfNecessary() {
+void ActiveIndexBuilds::sleepIfNecessary_forTest() {
     stdx::unique_lock<Latch> lk(_mutex);
     while (_sleepForTest) {
         lk.unlock();
         sleepmillis(100);
         lk.lock();
     }
-}
-
-void ActiveIndexBuilds::notifyAllIndexBuildFinished() {
-    _indexBuildFinished.notify_all();
-}
-
-void ActiveIndexBuilds::decrementNumActiveIndexBuildsAndNotifyOne() {
-    stdx::unique_lock<Latch> lk(_mutex);
-    _numActiveIndexBuilds--;
-    _indexBuildFinished.notify_one();
-}
-
-void ActiveIndexBuilds::incrementNumActiveIndexBuilds() {
-    stdx::unique_lock<Latch> lk(_mutex);
-    _numActiveIndexBuilds++;
-}
-
-void ActiveIndexBuilds::ensureActiveIndexBuildsLessThanMax(int maxActiveBuilds,
-                                                           OperationContext* opCtx,
-                                                           CollectionUUID collectionUUID,
-                                                           const std::vector<BSONObj>& specs,
-                                                           const UUID& buildUUID) {
-    stdx::unique_lock<Latch> lk(_mutex);
-    opCtx->waitForConditionOrInterrupt(_indexBuildFinished, lk, [&] {
-        if (_numActiveIndexBuilds < maxActiveBuilds) {
-            _numActiveIndexBuilds++;
-            return true;
-        }
-
-        LOGV2(4715500,
-              "Too many index builds running simultaneously, waiting until the number of "
-              "active index builds is below the threshold",
-              "numActiveIndexBuilds"_attr = _numActiveIndexBuilds,
-              "maxNumActiveUserIndexBuilds"_attr = maxActiveBuilds,
-              "indexSpecs"_attr = specs,
-              "buildUUID"_attr = buildUUID,
-              "collectionUUID"_attr = collectionUUID);
-        return false;
-    });
 }
 }  // namespace mongo
