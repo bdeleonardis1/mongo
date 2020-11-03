@@ -169,12 +169,11 @@ PlanStage::StageState DeleteStage::doWork(WorkingSetID* out) {
     }
 
     // Ensure that the BSONObj underlying the WorkingSetMember is owned because saveState() is
-    // allowed to free the memory.
-    if (_params->returnDeleted) {
-        // Save a copy of the document that is about to get deleted, but keep it in the RID_AND_OBJ
-        // state in case we need to retry deleting it.
-        member->makeObjOwnedIfNeeded();
-    }
+    // allowed to free the memory. This is necessary in order to pass the document to
+    // Collection::deleteDocument and to return the deleted document. This saves a
+    // copy of the document that is about to get deleted, but keeps it in the RID_AND_OBJ state in
+    // case we need to retry deleting it.
+    member->makeObjOwnedIfNeeded();
 
     if (_params->removeSaver) {
         uassertStatusOK(_params->removeSaver->goingToDelete(member->doc.value().toBson()));
@@ -182,7 +181,7 @@ PlanStage::StageState DeleteStage::doWork(WorkingSetID* out) {
 
     Snapshotted<Document> memberDoc = member->doc;
     Snapshotted<BSONObj> bsonObjDoc =
-        Snapshotted(memberDoc.snapshotId(), memberDoc.value().getOwned().toBson());
+        Snapshotted(memberDoc.snapshotId(), memberDoc.value().toBson());
 
     // TODO: Do we want to buffer docs and delete them in a group rather than saving/restoring state
     // repeatedly?

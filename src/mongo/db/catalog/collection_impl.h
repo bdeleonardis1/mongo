@@ -136,8 +136,7 @@ public:
     /**
      * Deletes the document from the collection.
 
-     * 'doc' the document to be deleted. The BSONObj should be owned in order for this to work
-     * to work correctly.
+     * 'doc' the document to be deleted. The BSONObj must be owned.
      * 'stmtId' the statement id for this delete operation. Pass in kUninitializedStmtId if not
      * applicable.
      * 'fromMigrate' indicates whether the delete was induced by a chunk migration, and

@@ -791,6 +791,9 @@ void CollectionImpl::deleteDocument(OperationContext* opCtx,
                                     bool fromMigrate,
                                     bool noWarn,
                                     Collection::StoreDeletedDoc storeDeletedDoc) const {
+    invariant(doc.value().isOwned(),
+              "The BSONObj must be owned in order to use it to delete the document");
+
     if (isCapped()) {
         LOGV2(20291,
               "failing remove on a capped ns {ns}",

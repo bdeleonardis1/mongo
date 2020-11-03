@@ -337,10 +337,9 @@ public:
                                 StoreDeletedDoc storeDeletedDoc = StoreDeletedDoc::Off) const = 0;
 
     /**
-     * Deletes the document with from the collection.
+     * Deletes the document from the collection.
      *
-     * 'doc' the document to be deleted. The BSONObj should be owned in order for this to work
-     * to work correctly.
+     * 'doc' the document to be deleted. The BSONObj must be owned.
      * 'fromMigrate' indicates whether the delete was induced by a chunk migration, and
      * so should be ignored by the user as an internal maintenance operation and not a
      * real delete.
