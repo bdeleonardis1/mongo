@@ -130,7 +130,7 @@ bool RecordStore::findRecord(OperationContext* opCtx, const RecordId& loc, Recor
     if (it == workingCopy->end()) {
         return false;
     }
-    *rd = RecordData(it->second.c_str(), it->second.length()).getOwned();
+    *rd = RecordData(it->second.c_str(), it->second.length());
     return true;
 }
 
