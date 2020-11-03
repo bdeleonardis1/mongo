@@ -341,14 +341,13 @@ public:
      *
      * 'doc' the document to be deleted. The BSONObj should be owned in order for this to work
      * to work correctly.
-     * 'fromMigrate' indicates whether the delete was induced by a chunk
-     * migration, and so should be ignored by the user as an internal maintenance operation and not
-     * a real delete.
+     * 'fromMigrate' indicates whether the delete was induced by a chunk migration, and
+     * so should be ignored by the user as an internal maintenance operation and not a
+     * real delete.
      * 'loc' key to uniquely identify a record in a collection.
-     * 'opDebug' Optional
-     * argument. When not null, will be used to record operation statistics.
-     * 'noWarn' if unindexing
-     * the record causes an error, if noWarn is true the error will not be logged.
+     * 'opDebug' Optional argument. When not null, will be used to record operation statistics.
+     * 'noWarn' if unindexing the record causes an error, if noWarn is true the error
+     * will not be logged.
      */
     virtual void deleteDocument(OperationContext* const opCtx,
                                 Snapshotted<BSONObj> doc,
