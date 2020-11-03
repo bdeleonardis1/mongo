@@ -364,12 +364,6 @@ public:
     void assertNoBgOpInProgForDb(StringData db) const;
 
     /**
-     * Waits for the index build with 'buildUUID' to finish before returning.
-     * Returns immediately if no such index build with 'buildUUID' is found.
-     */
-    void awaitIndexBuildFinished(OperationContext* opCtx, const UUID& buildUUID);
-
-    /**
      * Waits for all index builds on a specified collection to finish.
      */
     void awaitNoIndexBuildInProgressForCollection(OperationContext* opCtx,
@@ -420,7 +414,7 @@ public:
 
     void sleepIndexBuilds_forTestOnly(bool sleep);
 
-    void verifyNoIndexBuilds_forTestOnly();
+    void verifyNoIndexBuilds_forTestOnly() const;
 
     /**
      * Helper function that adds collation defaults to 'indexSpecs', as well as filtering out

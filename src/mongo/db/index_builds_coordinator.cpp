@@ -1490,11 +1490,6 @@ void IndexBuildsCoordinator::assertNoBgOpInProgForDb(StringData db) const {
             !inProgForDb(db));
 }
 
-void IndexBuildsCoordinator::awaitIndexBuildFinished(OperationContext* opCtx,
-                                                     const UUID& buildUUID) {
-    activeIndexBuilds.awaitIndexBuildFinished(opCtx, buildUUID);
-}
-
 void IndexBuildsCoordinator::awaitNoIndexBuildInProgressForCollection(OperationContext* opCtx,
                                                                       const UUID& collectionUUID,
                                                                       IndexBuildProtocol protocol) {
@@ -1614,7 +1609,7 @@ void IndexBuildsCoordinator::sleepIndexBuilds_forTestOnly(bool sleep) {
     activeIndexBuilds.sleepIndexBuilds_forTestOnly(sleep);
 }
 
-void IndexBuildsCoordinator::verifyNoIndexBuilds_forTestOnly() {
+void IndexBuildsCoordinator::verifyNoIndexBuilds_forTestOnly() const {
     activeIndexBuilds.verifyNoIndexBuilds_forTestOnly();
 }
 
@@ -1928,7 +1923,7 @@ void IndexBuildsCoordinator::_runIndexBuild(
     const UUID& buildUUID,
     const IndexBuildOptions& indexBuildOptions,
     const boost::optional<ResumeIndexInfo>& resumeInfo) noexcept {
-    activeIndexBuilds.sleepIfNecessary_forTest();
+    activeIndexBuilds.sleepIfNecessary_forTestOnly();
 
     // If the index build does not exist, do not continue building the index. This may happen if an
     // ignorable indexing error occurred during setup. The promise will have been fulfilled, but the

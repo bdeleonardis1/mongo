@@ -69,12 +69,6 @@ void ActiveIndexBuilds::assertNoIndexBuildInProgress() const {
             _allIndexBuilds.size() == 0);
 }
 
-void ActiveIndexBuilds::awaitIndexBuildFinished(OperationContext* opCtx, const UUID& buildUUID) {
-    stdx::unique_lock<Latch> lk(_mutex);
-    auto pred = [&, this]() { return _allIndexBuilds.end() == _allIndexBuilds.find(buildUUID); };
-    _indexBuildsCondVar.wait(lk, pred);
-}
-
 void ActiveIndexBuilds::waitUntilAnIndexBuildFinishes(OperationContext* opCtx) {
     stdx::unique_lock<Latch> lk(_mutex);
     if (_allIndexBuilds.empty()) {
@@ -90,7 +84,7 @@ void ActiveIndexBuilds::sleepIndexBuilds_forTestOnly(bool sleep) {
     _sleepForTest = sleep;
 }
 
-void ActiveIndexBuilds::verifyNoIndexBuilds_forTestOnly() {
+void ActiveIndexBuilds::verifyNoIndexBuilds_forTestOnly() const {
     stdx::unique_lock<Latch> lk(_mutex);
     invariant(_allIndexBuilds.empty());
 }
@@ -205,7 +199,7 @@ Status ActiveIndexBuilds::registerIndexBuild(
     return Status::OK();
 }
 
-void ActiveIndexBuilds::sleepIfNecessary_forTest() {
+void ActiveIndexBuilds::sleepIfNecessary_forTestOnly() const {
     stdx::unique_lock<Latch> lk(_mutex);
     while (_sleepForTest) {
         lk.unlock();

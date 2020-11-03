@@ -179,7 +179,7 @@ IndexBuildsCoordinatorMongod::_startIndexBuild(OperationContext* opCtx,
                         replCoord->canAcceptWritesFor(opCtx, nssOrUuid));
             }
 
-            stdx::unique_lock<Latch> lk(_mutex);
+            stdx::unique_lock<Latch> lk(_throttlingMutex);
             opCtx->waitForConditionOrInterrupt(_indexBuildFinished, lk, [&] {
                 const int maxActiveBuilds = maxNumActiveUserIndexBuilds.load();
                 if (_numActiveIndexBuilds < maxActiveBuilds) {
@@ -199,13 +199,13 @@ IndexBuildsCoordinatorMongod::_startIndexBuild(OperationContext* opCtx,
             });
         } else {
             // System index builds have no limit and never wait, but do consume a slot.
-            stdx::unique_lock<Latch> lk(_mutex);
+            stdx::unique_lock<Latch> lk(_throttlingMutex);
             _numActiveIndexBuilds++;
         }
     }
 
     auto onScopeExitGuard = makeGuard([&] {
-        stdx::unique_lock<Latch> lk(_mutex);
+        stdx::unique_lock<Latch> lk(_throttlingMutex);
         _numActiveIndexBuilds--;
         _indexBuildFinished.notify_one();
     });
@@ -290,7 +290,7 @@ IndexBuildsCoordinatorMongod::_startIndexBuild(OperationContext* opCtx,
         resumeInfo
     ](auto status) mutable noexcept {
         auto onScopeExitGuard = makeGuard([&] {
-            stdx::unique_lock<Latch> lk(_mutex);
+            stdx::unique_lock<Latch> lk(_throttlingMutex);
             _numActiveIndexBuilds--;
             _indexBuildFinished.notify_one();
         });

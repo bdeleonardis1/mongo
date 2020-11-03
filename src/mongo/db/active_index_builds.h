@@ -60,13 +60,11 @@ public:
 
     void assertNoIndexBuildInProgress() const;
 
-    void awaitIndexBuildFinished(OperationContext* opCtx, const UUID& buildUUID);
-
     void waitUntilAnIndexBuildFinishes(OperationContext* opCtx);
 
     void sleepIndexBuilds_forTestOnly(bool sleep);
 
-    void verifyNoIndexBuilds_forTestOnly();
+    void verifyNoIndexBuilds_forTestOnly() const;
 
     StatusWith<std::shared_ptr<ReplIndexBuildState>> getIndexBuild(const UUID& buildUUID) const;
 
@@ -101,7 +99,7 @@ public:
      * When _sleepForTest is true, this function will sleep for 100ms and then check the value
      * of _sleepForTest again.
      */
-    void sleepIfNecessary_forTest();
+    void sleepIfNecessary_forTestOnly() const;
 
 private:
     /**
