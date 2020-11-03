@@ -122,8 +122,21 @@ public:
 
 
     /**
-     * Deletes the document with the given RecordId from the collection.
-     *
+     * Deletes the document with the given RecordId from the collection. For a description of
+     * the parameters, see the overloaded function below.
+     */
+    void deleteDocument(
+        OperationContext* opCtx,
+        StmtId stmtId,
+        RecordId loc,
+        OpDebug* opDebug,
+        bool fromMigrate = false,
+        bool noWarn = false,
+        Collection::StoreDeletedDoc storeDeletedDoc = Collection::StoreDeletedDoc::Off) const final;
+
+    /**
+     * 'doc' the document to be deleted. The BSONObj should be owned in order for this to work
+     * to work correctly.
      * 'stmtId' the statement id for this delete operation. Pass in kUninitializedStmtId if not
      * applicable.
      * 'fromMigrate' indicates whether the delete was induced by a chunk migration, and
@@ -136,15 +149,6 @@ public:
      * will not be logged.
      * 'storeDeletedDoc' whether to store the document deleted in the oplog.
      */
-    void deleteDocument(
-        OperationContext* opCtx,
-        StmtId stmtId,
-        RecordId loc,
-        OpDebug* opDebug,
-        bool fromMigrate = false,
-        bool noWarn = false,
-        Collection::StoreDeletedDoc storeDeletedDoc = Collection::StoreDeletedDoc::Off) const final;
-
     void deleteDocument(
         OperationContext* opCtx,
         Snapshotted<BSONObj> doc,

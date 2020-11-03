@@ -427,14 +427,10 @@ const operations = [
         },
         profileFilter: {op: 'remove', 'command.q': {_id: 1}},
         profileAssert: (profileDoc) => {
-            // Due to a deficiency in the delete path, we read the same document twice.
-            // TODO (SERVER-51420): Deletes should not read documents twice before deleting.
-            print("debugBuild", debugBuild)
             if (!debugBuild) {
                 assert.eq(profileDoc.docBytesRead, 58);
                 assert.eq(profileDoc.docUnitsRead, 1);
             } else {
-                print("profileDoc.docUnitsRead", profileDoc.docUnitsRead)
                 assert.gte(profileDoc.docBytesRead, 58);
                 assert.gte(profileDoc.docUnitsRead, 1);
             }
@@ -460,8 +456,6 @@ const operations = [
         },
         profileFilter: {op: 'remove', 'command.q': {}},
         profileAssert: (profileDoc) => {
-            // Due to a deficiency in the delete path, we read the same document twice.
-            // TODO: SERVER-51420
             if (!debugBuild) {
                 assert.eq(profileDoc.docBytesRead, 58);
                 assert.eq(profileDoc.docUnitsRead, 1);
@@ -829,8 +823,6 @@ const operations = [
         },
         profileFilter: {op: 'remove'},
         profileAssert: (profileDoc) => {
-            // Due to a deficiency in the delete path, we read the same document twice.
-            // TODO (SERVER-51420): Deletes should not read documents twice before deleting.
             if (!debugBuild) {
                 assert.eq(profileDoc.docBytesRead, 58);
                 assert.eq(profileDoc.docUnitsRead, 1);
