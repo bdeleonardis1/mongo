@@ -428,10 +428,10 @@ const operations = [
         profileFilter: {op: 'remove', 'command.q': {_id: 1}},
         profileAssert: (profileDoc) => {
             if (!debugBuild) {
-                assert.eq(profileDoc.docBytesRead, 58);
+                assert.eq(profileDoc.docBytesRead, 29);
                 assert.eq(profileDoc.docUnitsRead, 1);
             } else {
-                assert.gte(profileDoc.docBytesRead, 58);
+                assert.gte(profileDoc.docBytesRead, 29);
                 assert.gte(profileDoc.docUnitsRead, 1);
             }
             assert.eq(profileDoc.idxEntryBytesRead, 3);
@@ -457,10 +457,10 @@ const operations = [
         profileFilter: {op: 'remove', 'command.q': {}},
         profileAssert: (profileDoc) => {
             if (!debugBuild) {
-                assert.eq(profileDoc.docBytesRead, 58);
+                assert.eq(profileDoc.docBytesRead, 29);
                 assert.eq(profileDoc.docUnitsRead, 1);
             } else {
-                assert.gte(profileDoc.docBytesRead, 58);
+                assert.gte(profileDoc.docBytesRead, 29);
                 assert.gte(profileDoc.docUnitsRead, 1);
             }
             assert.eq(profileDoc.idxEntryBytesRead, 0);
@@ -824,10 +824,10 @@ const operations = [
         profileFilter: {op: 'remove'},
         profileAssert: (profileDoc) => {
             if (!debugBuild) {
-                assert.eq(profileDoc.docBytesRead, 58);
+                assert.eq(profileDoc.docBytesRead, 29);
                 assert.eq(profileDoc.docUnitsRead, 1);
             } else {
-                assert.gte(profileDoc.docBytesRead, 58);
+                assert.gte(profileDoc.docBytesRead, 29);
                 assert.gte(profileDoc.docUnitsRead, 1);
             }
             assert.eq(profileDoc.idxEntryBytesRead, 3);
