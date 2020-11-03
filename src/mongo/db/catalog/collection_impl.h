@@ -120,7 +120,6 @@ public:
     std::unique_ptr<SeekableRecordCursor> getCursor(OperationContext* opCtx,
                                                     bool forward = true) const final;
 
-
     /**
      * Deletes the document with the given RecordId from the collection. For a description of
      * the parameters, see the overloaded function below.
@@ -135,6 +134,8 @@ public:
         Collection::StoreDeletedDoc storeDeletedDoc = Collection::StoreDeletedDoc::Off) const final;
 
     /**
+     * Deletes the document from the collection.
+
      * 'doc' the document to be deleted. The BSONObj should be owned in order for this to work
      * to work correctly.
      * 'stmtId' the statement id for this delete operation. Pass in kUninitializedStmtId if not

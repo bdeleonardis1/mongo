@@ -197,8 +197,6 @@ PlanStage::StageState DeleteStage::doWork(WorkingSetID* out) {
     if (!_params->isExplain) {
         try {
             WriteUnitOfWork wunit(opCtx());
-
-
             collection()->deleteDocument(opCtx(),
                                          bsonObjDoc,
                                          _params->stmtId,
