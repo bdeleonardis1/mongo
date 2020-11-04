@@ -168,20 +168,16 @@ PlanStage::StageState DeleteStage::doWork(WorkingSetID* out) {
         return PlanStage::NEED_TIME;
     }
 
-    // Ensure that the BSONObj underlying the WorkingSetMember is owned because saveState() is
-    // allowed to free the memory. This is necessary in order to pass the document to
-    // Collection::deleteDocument and to return the deleted document. This saves a
-    // copy of the document that is about to get deleted, but keeps it in the RID_AND_OBJ state in
-    // case we need to retry deleting it.
+    // Ensure that the BSONObj underlying the WSM is owned because saveState() is
+    // allowed to free the memory the BSONObj points to. The BSONObj will be needed
+    // later when it is passed to Collection::deleteDocument(). Note that the call to
+    // makeObjOwnedIfNeeded() will leave the WSM in the RID_AND_OBJ state in case we need to retry
+    // deleting it.
     member->makeObjOwnedIfNeeded();
 
     if (_params->removeSaver) {
         uassertStatusOK(_params->removeSaver->goingToDelete(member->doc.value().toBson()));
     }
-
-    Snapshotted<Document> memberDoc = member->doc;
-    Snapshotted<BSONObj> bsonObjDoc =
-        Snapshotted(memberDoc.snapshotId(), memberDoc.value().toBson());
 
     // TODO: Do we want to buffer docs and delete them in a group rather than saving/restoring state
     // repeatedly?
@@ -196,6 +192,9 @@ PlanStage::StageState DeleteStage::doWork(WorkingSetID* out) {
     if (!_params->isExplain) {
         try {
             WriteUnitOfWork wunit(opCtx());
+            Snapshotted<Document> memberDoc = member->doc;
+            Snapshotted<BSONObj> bsonObjDoc =
+                Snapshotted(memberDoc.snapshotId(), memberDoc.value().toBson());
             collection()->deleteDocument(opCtx(),
                                          bsonObjDoc,
                                          _params->stmtId,
