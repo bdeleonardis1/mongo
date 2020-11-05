@@ -332,8 +332,8 @@ public:
                                 StmtId stmtId,
                                 RecordId loc,
                                 OpDebug* const opDebug,
-                                const bool fromMigrate = false,
-                                const bool noWarn = false,
+                                bool fromMigrate = false,
+                                bool noWarn = false,
                                 StoreDeletedDoc storeDeletedDoc = StoreDeletedDoc::Off) const = 0;
 
     /**

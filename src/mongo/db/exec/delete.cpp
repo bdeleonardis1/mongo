@@ -35,7 +35,6 @@
 
 #include <memory>
 
-#include "mongo/bson/bsonobj.h"
 #include "mongo/db/catalog/collection.h"
 #include "mongo/db/concurrency/write_conflict_exception.h"
 #include "mongo/db/curop.h"
@@ -175,8 +174,11 @@ PlanStage::StageState DeleteStage::doWork(WorkingSetID* out) {
     // deleting it.
     member->makeObjOwnedIfNeeded();
 
+    Snapshotted<Document> memberDoc = member->doc;
+    BSONObj bsonObjDoc = memberDoc.value().toBson();
+
     if (_params->removeSaver) {
-        uassertStatusOK(_params->removeSaver->goingToDelete(member->doc.value().toBson()));
+        uassertStatusOK(_params->removeSaver->goingToDelete(bsonObjDoc));
     }
 
     // TODO: Do we want to buffer docs and delete them in a group rather than saving/restoring state
@@ -192,11 +194,10 @@ PlanStage::StageState DeleteStage::doWork(WorkingSetID* out) {
     if (!_params->isExplain) {
         try {
             WriteUnitOfWork wunit(opCtx());
-            Snapshotted<Document> memberDoc = member->doc;
-            Snapshotted<BSONObj> bsonObjDoc =
-                Snapshotted(memberDoc.snapshotId(), memberDoc.value().toBson());
+            Snapshotted<BSONObj> snapshottedBsonObj =
+                Snapshotted(memberDoc.snapshotId(), bsonObjDoc);
             collection()->deleteDocument(opCtx(),
-                                         bsonObjDoc,
+                                         snapshottedBsonObj,
                                          _params->stmtId,
                                          recordId,
                                          _params->opDebug,
