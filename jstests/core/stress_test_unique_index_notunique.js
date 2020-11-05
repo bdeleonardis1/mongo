@@ -3,6 +3,7 @@
 // @tags: [
 //   assumes_unsharded_collection,
 //   requires_non_retryable_writes,
+//   incompatible_with_eft,
 // ]
 
 (function() {
@@ -11,7 +12,7 @@
 let coll = db.stress_test_unique_index_notunique;
 coll.drop();
 
-const kNumDocs = 2000000;  // ~65 MB
+const kNumDocs = 500000;  // ~15 MB
 
 function loadCollectionWithDocs(collection, numDocs) {
     const kMaxChunkSize = 100000;
