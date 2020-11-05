@@ -339,7 +339,7 @@ public:
     /**
      * Deletes the document from the collection.
      *
-     * 'doc' the document to be deleted
+     * 'doc' the document to be deleted.
      * 'fromMigrate' indicates whether the delete was induced by a chunk migration, and
      * so should be ignored by the user as an internal maintenance operation and not a
      * real delete.
