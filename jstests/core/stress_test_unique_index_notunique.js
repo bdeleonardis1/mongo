@@ -3,11 +3,15 @@
 // @tags: [
 //   assumes_unsharded_collection,
 //   requires_non_retryable_writes,
-//   incompatible_with_eft,
 // ]
 
 (function() {
 "use strict";
+
+load("jstests/concurrency/fsm_workload_helpers/server_types.js");
+if (isEphemeralForTest(db)) {
+    return;
+}
 
 let coll = db.stress_test_unique_index_notunique;
 coll.drop();
