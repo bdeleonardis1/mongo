@@ -246,6 +246,8 @@ const operations = [
             }
             assert.eq(profileDoc.idxEntryBytesRead, 3);
             assert.eq(profileDoc.idxEntryUnitsRead, 1);
+            // This update will not be performed in-place because it is too small and affects an
+            // index.
             assert.eq(profileDoc.docBytesWritten, 29);
             assert.eq(profileDoc.docUnitsWritten, 1);
             // Deletes one index entry and writes another.
@@ -609,7 +611,6 @@ const operations = [
             assert.eq(profileDoc.idxEntryBytesRead, 10);
             assert.eq(profileDoc.idxEntryUnitsRead, 2);
 
-            // TODO: fix this one
             if (isReplSet) {
                 // When WT_MODIFY is used on a replicated collection fewer bytes are written per the
                 // comment about WT_MODIFY above.
@@ -648,6 +649,8 @@ const operations = [
             }
             assert.eq(profileDoc.idxEntryBytesRead, 4);
             assert.eq(profileDoc.idxEntryUnitsRead, 1);
+            // This is calculated as the number of bytes overwritten + the number of bytes
+            // written, and is still less than the full document size.
             assert.eq(profileDoc.docBytesWritten, 16);
             assert.eq(profileDoc.docUnitsWritten, 1);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
