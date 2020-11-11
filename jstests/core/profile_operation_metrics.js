@@ -610,7 +610,6 @@ const operations = [
             // Reads index entries on '_id' for the lookup and 'a' to ensure uniqueness.
             assert.eq(profileDoc.idxEntryBytesRead, 10);
             assert.eq(profileDoc.idxEntryUnitsRead, 2);
-
             if (isReplSet) {
                 // When WT_MODIFY is used on a replicated collection fewer bytes are written per the
                 // comment about WT_MODIFY above.
