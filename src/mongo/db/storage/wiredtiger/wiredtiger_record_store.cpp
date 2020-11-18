@@ -1067,11 +1067,15 @@ void WiredTigerRecordStore::deleteRecord(OperationContext* opCtx, const RecordId
     invariantWTOK(ret);
 
     int64_t old_length = old_value.size;
+    std::cerr << "old_length outside: " << old_length << "\n";
 
     ret = WT_OP_CHECK(wiredTigerCursorRemove(opCtx, c));
     invariantWTOK(ret);
-
-    metricsCollector.incrementOneDocWritten(old_length);
+    opCtx->recoveryUnit()->onCommit([old_length, opCtx](boost::optional<Timestamp>) {
+        std::cerr << "old_length inside: " << old_length << "\n";
+        auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+        metricsCollector.incrementOneDocWritten(old_length);
+    });
 
     _changeNumRecords(opCtx, -1);
     _increaseDataSize(opCtx, -old_length);
