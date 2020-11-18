@@ -1074,6 +1074,10 @@ void WiredTigerRecordStore::deleteRecord(OperationContext* opCtx, const RecordId
         auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
         metricsCollector.incrementOneDocWritten(old_length);
     });
+    opCtx->recoveryUnit()->onRollback([old_length, opCtx](boost::optional<Timestamp>) {
+        auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+        metricsCollector.incrementOneFailedDocWritten(old_length);
+    });
 
     _changeNumRecords(opCtx, -1);
     _increaseDataSize(opCtx, -old_length);
@@ -1551,7 +1555,7 @@ Status WiredTigerRecordStore::_insertRecords(OperationContext* opCtx,
         // requires that each record be accounted for separately.
         if (!_isOplog) {
             auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
-            metricsCollector.incrementOneDocWritten(value.size);
+            metricsCollector.incrementOneFailedDocWritten(value.size);
         }
     }
 
