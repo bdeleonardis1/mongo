@@ -1709,13 +1709,13 @@ Status WiredTigerRecordStore::updateRecord(OperationContext* opCtx,
                 modifiedDataSize += entries[i].size + entries[i].data.size;
             };
 
-            opCtx->recoveryUnit()->onCommit([old_length, opCtx](boost::optional<Timestamp>) {
+            opCtx->recoveryUnit()->onCommit([modifiedDataSize, opCtx](boost::optional<Timestamp>) {
                 auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
-                metricsCollector.incrementOneDocWritten(old_length);
+                metricsCollector.incrementOneDocWritten(modifiedDataSize);
             });
-            opCtx->recoveryUnit()->onRollback([old_length, opCtx]() {
+            opCtx->recoveryUnit()->onRollback([modifiedDataSize, opCtx]() {
                 auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
-                metricsCollector.incrementOneFailedDocWritten(old_length);
+                metricsCollector.incrementOneFailedDocWritten(modifiedDataSize);
             });
 
             WT_ITEM new_value;
@@ -1731,13 +1731,14 @@ Status WiredTigerRecordStore::updateRecord(OperationContext* opCtx,
     if (!skip_update) {
         c->set_value(c, value.Get());
         ret = WT_OP_CHECK(wiredTigerCursorInsert(opCtx, c));
-        opCtx->recoveryUnit()->onCommit([old_length, opCtx](boost::optional<Timestamp>) {
+        int size = value.size;
+        opCtx->recoveryUnit()->onCommit([size, opCtx](boost::optional<Timestamp>) {
             auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
-            metricsCollector.incrementOneDocWritten(old_length);
+            metricsCollector.incrementOneDocWritten(size);
         });
-        opCtx->recoveryUnit()->onRollback([old_length, opCtx]() {
+        opCtx->recoveryUnit()->onRollback([size, opCtx]() {
             auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
-            metricsCollector.incrementOneFailedDocWritten(old_length);
+            metricsCollector.incrementOneFailedDocWritten(size);
         });
     }
     invariantWTOK(ret);

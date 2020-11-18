@@ -598,8 +598,8 @@ const operations = [
             // Despite failing to insert keys into the unique index, the operation first succeeded
             // in writing to the collection. Even though the operation was rolled-back, this counts
             // towards metrics.
-            assert.eq(profileDoc.docBytesWritten, 29);
-            assert.eq(profileDoc.docUnitsWritten, 1);
+            assert.eq(profileDoc.docBytesWritten, 0);
+            assert.eq(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 4);
             assert.eq(profileDoc.idxEntryUnitsWritten, 1);
         }
