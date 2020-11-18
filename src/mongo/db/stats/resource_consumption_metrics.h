@@ -139,9 +139,10 @@ public:
          */
         void toBsonNonZeroFields(BSONObjBuilder* builder) const;
 
-        // Read and write metrics for this operation
+        // Read, write, and failed write metrics for this operation
         ReadMetrics readMetrics;
         WriteMetrics writeMetrics;
+        WriteMetrics failedWriteMetrics;
 
         // Records CPU time consumed by this operation.
         OperationCPUTimer* cpuTimer = nullptr;
@@ -157,6 +158,7 @@ public:
             primaryReadMetrics += other.primaryReadMetrics;
             secondaryReadMetrics += other.secondaryReadMetrics;
             writeMetrics += other.writeMetrics;
+            failedWriteMetrics += other.failedWriteMetrics;
             cpuNanos += other.cpuNanos;
         };
 
@@ -178,6 +180,9 @@ public:
 
         // Write metrics recorded for all operations
         WriteMetrics writeMetrics;
+
+        // Write metrics that failed or needed to be rolled back for this operation
+        WriteMetrics failedWriteMetrics;
 
         // Amount of CPU time consumed by an operation in nanoseconds
         Nanoseconds cpuNanos;
@@ -300,6 +305,22 @@ public:
          * that entry. This is a no-op when metrics collection is disabled on this operation.
          */
         void incrementOneIdxEntryWritten(size_t idxEntryBytesWritten);
+
+        /**
+         * This should be called once for every document that is written and then rolled back. This
+         * is a no-op when metrics collection is disabled on this operation. This function should
+         * not be called if the operation fails, it should only be called if the write goes through
+         * and is then rolled back.
+         */
+        void incrementOneFailedDocWritten(size_t docBytesWritten);
+
+        /**
+         * This should be called once for every index entry that is written and then rolled back.
+         * This is a no-op when metrics collection is disabled on this operation. This function
+         * should not be called if the operation fails, it should only be called if the write goes
+         * through and is then rolled back.
+         */
+        void incrementOneFailedIdxEntryWritten(size_t idxEntryBytesWritten);
 
         /**
          * This should be called once every time the storage engine successfully does a cursor seek.

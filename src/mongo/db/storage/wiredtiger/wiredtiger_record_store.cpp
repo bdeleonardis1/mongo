@@ -1070,8 +1070,7 @@ void WiredTigerRecordStore::deleteRecord(OperationContext* opCtx, const RecordId
 
     ret = WT_OP_CHECK(wiredTigerCursorRemove(opCtx, c));
     invariantWTOK(ret);
-
-    metricsCollector.incrementOneDocWritten(old_length);
+    _setupIncrementDocWriteHooks(opCtx, old_length);
 
     _changeNumRecords(opCtx, -1);
     _increaseDataSize(opCtx, -old_length);
@@ -1548,8 +1547,7 @@ Status WiredTigerRecordStore::_insertRecords(OperationContext* opCtx,
         // Increment metrics for each insert separately, as opposed to outside of the loop. The API
         // requires that each record be accounted for separately.
         if (!_isOplog) {
-            auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
-            metricsCollector.incrementOneDocWritten(value.size);
+            _setupIncrementDocWriteHooks(opCtx, value.size);
         }
     }
 
@@ -1695,7 +1693,8 @@ Status WiredTigerRecordStore::updateRecord(OperationContext* opCtx,
                 // are inserting (data.size).
                 modifiedDataSize += entries[i].size + entries[i].data.size;
             };
-            metricsCollector.incrementOneDocWritten(modifiedDataSize);
+
+            _setupIncrementDocWriteHooks(opCtx, modifiedDataSize);
 
             WT_ITEM new_value;
             dassert(nentries == 0 ||
@@ -1710,7 +1709,7 @@ Status WiredTigerRecordStore::updateRecord(OperationContext* opCtx,
     if (!skip_update) {
         c->set_value(c, value.Get());
         ret = WT_OP_CHECK(wiredTigerCursorInsert(opCtx, c));
-        metricsCollector.incrementOneDocWritten(value.size);
+        _setupIncrementDocWriteHooks(opCtx, value.size);
     }
     invariantWTOK(ret);
 
@@ -1761,8 +1760,7 @@ StatusWith<RecordData> WiredTigerRecordStore::updateWithDamages(
     else
         invariantWTOK(WT_OP_CHECK(wiredTigerCursorModify(opCtx, c, entries.data(), nentries)));
 
-    auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
-    metricsCollector.incrementOneDocWritten(modifiedDataSize);
+    _setupIncrementDocWriteHooks(opCtx, modifiedDataSize);
 
     WT_ITEM value;
     invariantWTOK(c->get_value(c, &value));
@@ -2198,6 +2196,15 @@ Status WiredTigerRecordStore::oplogDiskLocRegister(OperationContext* opCtx,
     notifyCappedWaitersIfNeeded();
 
     return Status::OK();
+}
+
+void WiredTigerRecordStore::_setupIncrementDocWriteHooks(OperationContext* opCtx, size_t size) {
+    auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+    opCtx->recoveryUnit()->onCommit([size, &metricsCollector](boost::optional<Timestamp>) {
+        metricsCollector.incrementOneDocWritten(size);
+    });
+    opCtx->recoveryUnit()->onRollback(
+        [size, &metricsCollector]() { metricsCollector.incrementOneFailedDocWritten(size); });
 }
 
 // Cursor Base:
