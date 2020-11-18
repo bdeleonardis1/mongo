@@ -1074,7 +1074,7 @@ void WiredTigerRecordStore::deleteRecord(OperationContext* opCtx, const RecordId
         auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
         metricsCollector.incrementOneDocWritten(old_length);
     });
-    opCtx->recoveryUnit()->onRollback([old_length, opCtx](boost::optional<Timestamp>) {
+    opCtx->recoveryUnit()->onRollback([old_length, opCtx]() {
         auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
         metricsCollector.incrementOneFailedDocWritten(old_length);
     });
@@ -1554,8 +1554,15 @@ Status WiredTigerRecordStore::_insertRecords(OperationContext* opCtx,
         // Increment metrics for each insert separately, as opposed to outside of the loop. The API
         // requires that each record be accounted for separately.
         if (!_isOplog) {
-            auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
-            metricsCollector.incrementOneFailedDocWritten(value.size);
+            int size = value.size;
+            opCtx->recoveryUnit()->onCommit([size, opCtx](boost::optional<Timestamp>) {
+                auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+                metricsCollector.incrementOneDocWritten(size);
+            });
+            opCtx->recoveryUnit()->onRollback([size, opCtx]() {
+                auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+                metricsCollector.incrementOneFailedDocWritten(size);
+            });
         }
     }
 
@@ -1701,7 +1708,15 @@ Status WiredTigerRecordStore::updateRecord(OperationContext* opCtx,
                 // are inserting (data.size).
                 modifiedDataSize += entries[i].size + entries[i].data.size;
             };
-            metricsCollector.incrementOneDocWritten(modifiedDataSize);
+
+            opCtx->recoveryUnit()->onCommit([old_length, opCtx](boost::optional<Timestamp>) {
+                auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+                metricsCollector.incrementOneDocWritten(old_length);
+            });
+            opCtx->recoveryUnit()->onRollback([old_length, opCtx]() {
+                auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+                metricsCollector.incrementOneFailedDocWritten(old_length);
+            });
 
             WT_ITEM new_value;
             dassert(nentries == 0 ||
@@ -1716,7 +1731,14 @@ Status WiredTigerRecordStore::updateRecord(OperationContext* opCtx,
     if (!skip_update) {
         c->set_value(c, value.Get());
         ret = WT_OP_CHECK(wiredTigerCursorInsert(opCtx, c));
-        metricsCollector.incrementOneDocWritten(value.size);
+        opCtx->recoveryUnit()->onCommit([old_length, opCtx](boost::optional<Timestamp>) {
+            auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+            metricsCollector.incrementOneDocWritten(old_length);
+        });
+        opCtx->recoveryUnit()->onRollback([old_length, opCtx]() {
+            auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+            metricsCollector.incrementOneFailedDocWritten(old_length);
+        });
     }
     invariantWTOK(ret);
 
@@ -1767,8 +1789,14 @@ StatusWith<RecordData> WiredTigerRecordStore::updateWithDamages(
     else
         invariantWTOK(WT_OP_CHECK(wiredTigerCursorModify(opCtx, c, entries.data(), nentries)));
 
-    auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
-    metricsCollector.incrementOneDocWritten(modifiedDataSize);
+    opCtx->recoveryUnit()->onCommit([modifiedDataSize, opCtx](boost::optional<Timestamp>) {
+        auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+        metricsCollector.incrementOneDocWritten(modifiedDataSize);
+    });
+    opCtx->recoveryUnit()->onRollback([modifiedDataSize, opCtx]() {
+        auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+        metricsCollector.incrementOneFailedDocWritten(modifiedDataSize);
+    });
 
     WT_ITEM value;
     invariantWTOK(c->get_value(c, &value));
