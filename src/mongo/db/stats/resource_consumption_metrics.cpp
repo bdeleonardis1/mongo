@@ -59,6 +59,7 @@ static const char kIdxEntryBytesWritten[] = "idxEntryBytesWritten";
 static const char kIdxEntryUnitsWritten[] = "idxEntryUnitsWritten";
 static const char kDocUnitsReturned[] = "docUnitsReturned";
 static const char kCursorSeeks[] = "cursorSeeks";
+static const char kFailedWrites[] = "failedWrites";
 
 inline void appendNonZeroMetric(BSONObjBuilder* builder, const char* name, long long value) {
     if (value != 0) {
@@ -146,6 +147,13 @@ void ResourceConsumption::AggregatedMetrics::toBson(BSONObjBuilder* builder) con
     }
 
     writeMetrics.toBson(builder);
+
+    {
+        BSONObjBuilder failedWriteBuilder = builder->subobjStart(kFailedWrites);
+        failedWriteMetrics.toBson(&failedWriteBuilder);
+        failedWriteBuilder.done();
+    }
+
     builder->appendNumber(kCpuNanos, durationCount<Nanoseconds>(cpuNanos));
 }
 
@@ -155,6 +163,9 @@ void ResourceConsumption::OperationMetrics::toBson(BSONObjBuilder* builder) cons
     if (cpuTimer) {
         builder->appendNumber(kCpuNanos, durationCount<Nanoseconds>(cpuTimer->getElapsed()));
     }
+    BSONObjBuilder failedWriteBuilder = builder->subobjStart(kFailedWrites);
+    failedWriteMetrics.toBson(&failedWriteBuilder);
+    failedWriteBuilder.done();
 }
 
 void ResourceConsumption::OperationMetrics::toBsonNonZeroFields(BSONObjBuilder* builder) const {
@@ -173,6 +184,17 @@ void ResourceConsumption::OperationMetrics::toBsonNonZeroFields(BSONObjBuilder* 
     appendNonZeroMetric(builder, kDocUnitsWritten, writeMetrics.docUnitsWritten);
     appendNonZeroMetric(builder, kIdxEntryBytesWritten, writeMetrics.idxEntryBytesWritten);
     appendNonZeroMetric(builder, kIdxEntryUnitsWritten, writeMetrics.idxEntryUnitsWritten);
+
+    BSONObjBuilder failedWriteMetricsBuilder = builder->subobjStart(kFailedWrites);
+    appendNonZeroMetric(
+        &failedWriteMetricsBuilder, kDocBytesWritten, failedWriteMetrics.docBytesWritten);
+    appendNonZeroMetric(
+        &failedWriteMetricsBuilder, kDocUnitsWritten, failedWriteMetrics.docUnitsWritten);
+    appendNonZeroMetric(
+        &failedWriteMetricsBuilder, kIdxEntryBytesWritten, writeMetrics.idxEntryUnitsWritten);
+    appendNonZeroMetric(
+        &failedWriteMetricsBuilder, kIdxEntryUnitsWritten, failedWriteMetrics.idxEntryUnitsWritten);
+    failedWriteMetricsBuilder.done();
 }
 
 template <typename Func>
@@ -224,6 +246,22 @@ void ResourceConsumption::MetricsCollector::incrementOneIdxEntryWritten(size_t b
         size_t idxUnits = std::ceil(bytesWritten / static_cast<float>(gIndexEntryUnitSizeBytes));
         _metrics.writeMetrics.idxEntryBytesWritten += bytesWritten;
         _metrics.writeMetrics.idxEntryUnitsWritten += idxUnits;
+    });
+}
+
+void ResourceConsumption::MetricsCollector::incrementOneFailedDocWritten(size_t bytesWritten) {
+    _doIfCollecting([&] {
+        size_t docUnits = std::ceil(bytesWritten / static_cast<float>(gDocumentUnitSizeBytes));
+        _metrics.failedWriteMetrics.docBytesWritten += bytesWritten;
+        _metrics.failedWriteMetrics.docUnitsWritten += docUnits;
+    });
+}
+
+void ResourceConsumption::MetricsCollector::incrementOneFailedIdxEntryWritten(size_t bytesWritten) {
+    _doIfCollecting([&] {
+        size_t idxUnits = std::ceil(bytesWritten / static_cast<float>(gIndexEntryUnitSizeBytes));
+        _metrics.failedWriteMetrics.idxEntryBytesWritten += bytesWritten;
+        _metrics.failedWriteMetrics.idxEntryUnitsWritten += idxUnits;
     });
 }
 
