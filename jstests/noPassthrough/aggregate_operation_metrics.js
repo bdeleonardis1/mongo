@@ -42,6 +42,10 @@ let assertMetricsExist = function(metrics) {
         assert.gte(metrics.docUnitsWritten, 0);
         assert.gte(metrics.idxEntryBytesWritten, 0);
         assert.gte(metrics.idxEntryUnitsWritten, 0);
+        assert.gte(metrics.failedWrites.docBytesWritten, 0);
+        assert.gte(metrics.failedWrites.docUnitsWritten, 0);
+        assert.gte(metrics.failedWrites.idxEntryBytesWritten, 0);
+        assert.gte(metrics.failedWrites.idxEntryUnitsWritten, 0);
     } catch (e) {
         print("caught exception while checking metrics output: " + tojson(metrics));
         throw e;

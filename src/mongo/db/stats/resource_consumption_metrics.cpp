@@ -250,10 +250,14 @@ void ResourceConsumption::MetricsCollector::incrementOneIdxEntryWritten(size_t b
 }
 
 void ResourceConsumption::MetricsCollector::incrementOneFailedDocWritten(size_t bytesWritten) {
+    std::cerr << "outside doIfCollecting\n";
     _doIfCollecting([&] {
+        std::cerr << "inside doIfCollecting\n";
         size_t docUnits = std::ceil(bytesWritten / static_cast<float>(gDocumentUnitSizeBytes));
         _metrics.failedWriteMetrics.docBytesWritten += bytesWritten;
         _metrics.failedWriteMetrics.docUnitsWritten += docUnits;
+        std::cerr << "metrics.failedWriteMetrics.docBytesWritten: "
+                  << _metrics.failedWriteMetrics.docBytesWritten << "\n";
     });
 }
 
@@ -365,6 +369,7 @@ void ResourceConsumption::merge(OperationContext* opCtx,
     if (metrics.cpuTimer) {
         newMetrics.cpuNanos = metrics.cpuTimer->getElapsed();
     }
+    newMetrics.failedWriteMetrics = metrics.failedWriteMetrics;
 
     // Add all metrics into the the globally-aggregated metrics.
     stdx::lock_guard<Mutex> lk(_mutex);

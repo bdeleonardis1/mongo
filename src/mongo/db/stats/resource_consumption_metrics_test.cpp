@@ -631,4 +631,90 @@ TEST_F(ResourceConsumptionMetricsTest, CursorSeeks) {
     auto metricsCopy = globalResourceConsumption.getDbMetrics();
     ASSERT_EQ(metricsCopy["db1"].primaryReadMetrics.cursorSeeks, expectedSeeks);
 }
+
+TEST_F(ResourceConsumptionMetricsTest, FailedWritesDocumentUnitsWritten) {
+    auto& globalResourceConsumption = ResourceConsumption::get(getServiceContext());
+    auto& operationMetrics = ResourceConsumption::MetricsCollector::get(_opCtx.get());
+
+    int expectedBytes = 0;
+    int expectedUnits = 0;
+
+    {
+        ResourceConsumption::ScopedMetricsCollector scope(_opCtx.get(), "db1");
+
+        // Each of these should be counted as 1 document unit (unit size = 128).
+        operationMetrics.incrementOneFailedDocWritten(2);
+        operationMetrics.incrementOneFailedDocWritten(4);
+        operationMetrics.incrementOneFailedDocWritten(8);
+        operationMetrics.incrementOneFailedDocWritten(16);
+        operationMetrics.incrementOneFailedDocWritten(32);
+        operationMetrics.incrementOneFailedDocWritten(64);
+        operationMetrics.incrementOneFailedDocWritten(128);
+        expectedBytes += 2 + 4 + 8 + 16 + 32 + 64 + 128;
+        expectedUnits += 7;
+
+        // Each of these should be counted as 2 document units (unit size = 128).
+        operationMetrics.incrementOneFailedDocWritten(129);
+        operationMetrics.incrementOneFailedDocWritten(200);
+        operationMetrics.incrementOneFailedDocWritten(255);
+        operationMetrics.incrementOneFailedDocWritten(256);
+        expectedBytes += 129 + 200 + 255 + 256;
+        expectedUnits += 8;
+    }
+
+    auto metricsCopy = globalResourceConsumption.getDbMetrics();
+
+    ASSERT_EQ(metricsCopy["db1"].failedWriteMetrics.docBytesWritten, expectedBytes);
+    ASSERT_EQ(metricsCopy["db1"].failedWriteMetrics.docUnitsWritten, expectedUnits);
+}
+
+TEST_F(ResourceConsumptionMetricsTest, FailedIdxEntryUnitsWritten) {
+    auto& globalResourceConsumption = ResourceConsumption::get(getServiceContext());
+    auto& operationMetrics = ResourceConsumption::MetricsCollector::get(_opCtx.get());
+
+    int expectedBytes = 0;
+    int expectedUnits = 0;
+
+    {
+        ResourceConsumption::ScopedMetricsCollector scope(_opCtx.get(), "db1");
+
+        gIndexEntryUnitSizeBytes = 16;
+
+        // Each of these should be counted as 1 document unit.
+        operationMetrics.incrementOneFailedIdxEntryWritten(2);
+        operationMetrics.incrementOneFailedIdxEntryWritten(4);
+        operationMetrics.incrementOneFailedIdxEntryWritten(8);
+        operationMetrics.incrementOneFailedIdxEntryWritten(16);
+        expectedBytes += 2 + 4 + 8 + 16;
+        expectedUnits += 4;
+
+        // Each of these should be counted as 2 document units.
+        operationMetrics.incrementOneFailedIdxEntryWritten(17);
+        operationMetrics.incrementOneFailedIdxEntryWritten(31);
+        operationMetrics.incrementOneFailedIdxEntryWritten(32);
+        expectedBytes += 17 + 31 + 32;
+        expectedUnits += 6;
+
+        gIndexEntryUnitSizeBytes = 32;
+
+        // Each of these should be counted as 1 document unit.
+        operationMetrics.incrementOneFailedIdxEntryWritten(17);
+        operationMetrics.incrementOneFailedIdxEntryWritten(31);
+        operationMetrics.incrementOneFailedIdxEntryWritten(32);
+        expectedBytes += 17 + 31 + 32;
+        expectedUnits += 3;
+
+        // Each of these should be counted as 2 document units.
+        operationMetrics.incrementOneFailedIdxEntryWritten(33);
+        operationMetrics.incrementOneFailedIdxEntryWritten(63);
+        operationMetrics.incrementOneFailedIdxEntryWritten(64);
+        expectedBytes += 33 + 63 + 64;
+        expectedUnits += 6;
+    }
+
+    auto metricsCopy = globalResourceConsumption.getDbMetrics();
+    ASSERT_EQ(metricsCopy["db1"].failedWriteMetrics.idxEntryBytesWritten, expectedBytes);
+    ASSERT_EQ(metricsCopy["db1"].failedWriteMetrics.idxEntryUnitsWritten, expectedUnits);
+}
+
 }  // namespace mongo
