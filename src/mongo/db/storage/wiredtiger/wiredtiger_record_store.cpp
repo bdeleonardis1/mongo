@@ -2199,14 +2199,12 @@ Status WiredTigerRecordStore::oplogDiskLocRegister(OperationContext* opCtx,
 }
 
 void WiredTigerRecordStore::_setupIncrementDocWriteHooks(OperationContext* opCtx, size_t size) {
-    opCtx->recoveryUnit()->onCommit([size, opCtx](boost::optional<Timestamp>) {
-        auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+    auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+    opCtx->recoveryUnit()->onCommit([size, &metricsCollector](boost::optional<Timestamp>) {
         metricsCollector.incrementOneDocWritten(size);
     });
-    opCtx->recoveryUnit()->onRollback([size, opCtx]() {
-        auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
-        metricsCollector.incrementOneFailedDocWritten(size);
-    });
+    opCtx->recoveryUnit()->onRollback(
+        [size, &metricsCollector]() { metricsCollector.incrementOneFailedDocWritten(size); });
 }
 
 // Cursor Base:

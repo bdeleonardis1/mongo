@@ -1943,14 +1943,12 @@ void WiredTigerIndexStandard::_unindex(OperationContext* opCtx,
 }
 
 void setupIncrementIndexHooks(OperationContext* opCtx, size_t size) {
-    opCtx->recoveryUnit()->onCommit([size, opCtx](boost::optional<Timestamp>) {
-        auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+    auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+    opCtx->recoveryUnit()->onCommit([size, &metricsCollector](boost::optional<Timestamp>) {
         metricsCollector.incrementOneIdxEntryWritten(size);
     });
-    opCtx->recoveryUnit()->onRollback([size, opCtx]() {
-        auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
-        metricsCollector.incrementOneFailedIdxEntryWritten(size);
-    });
+    opCtx->recoveryUnit()->onRollback(
+        [size, &metricsCollector]() { metricsCollector.incrementOneFailedIdxEntryWritten(size); });
 }
 
 }  // namespace mongo
