@@ -348,6 +348,9 @@ private:
     int64_t _cappedDeleteAsNeeded(OperationContext* opCtx, const RecordId& justInserted);
     int64_t _cappedDeleteAsNeeded_inlock(OperationContext* opCtx, const RecordId& justInserted);
 
+    // TODO: add docs here
+    void _setupIncrementDocWriteHooks(OperationContext* opCtx, size_t size);
+
     const std::string _uri;
     const uint64_t _tableId;  // not persisted
 
