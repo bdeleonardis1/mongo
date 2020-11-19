@@ -289,4 +289,6 @@ public:
                   bool dupsAllowed) override;
 };
 
+void setupIncrementIndexHooks(OperationContext* opCtx, size_t size);
+
 }  // namespace mongo
