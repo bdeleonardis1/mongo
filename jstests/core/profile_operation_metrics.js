@@ -55,6 +55,10 @@ const assertMetricsExist = (profilerEntry) => {
     assert.gte(metrics.docUnitsWritten, 0);
     assert.gte(metrics.idxEntryBytesWritten, 0);
     assert.gte(metrics.idxEntryUnitsWritten, 0);
+    assert.gte(metrics.failedWrites.docBytesWritten, 0);
+    assert.gte(metrics.failedWrites.docUnitsWritten, 0);
+    assert.gte(metrics.failedWrites.idxEntryBytesWritten, 0);
+    assert.gte(metrics.failedWrites.idxEntryUnitsWritten, 0);
 };
 
 const runInLegacyQueryMode = (db, func) => {
@@ -106,6 +110,10 @@ const operations = [
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
             assert.gt(profileDoc.cursorSeeks, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -128,6 +136,10 @@ const operations = [
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
             assert.gt(profileDoc.cursorSeeks, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -148,6 +160,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -167,6 +183,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 1);
             assert.eq(profileDoc.idxEntryBytesWritten, 7);
             assert.eq(profileDoc.idxEntryUnitsWritten, 2);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -197,6 +217,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -216,6 +240,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -235,6 +263,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -254,6 +286,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -283,6 +319,10 @@ const operations = [
             // Deletes one index entry and writes another.
             assert.eq(profileDoc.idxEntryBytesWritten, 9);
             assert.eq(profileDoc.idxEntryUnitsWritten, 2);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -312,6 +352,10 @@ const operations = [
             // Deletes one index entry and writes another.
             assert.eq(profileDoc.idxEntryBytesWritten, 10);
             assert.eq(profileDoc.idxEntryUnitsWritten, 2);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -330,6 +374,10 @@ const operations = [
             assert.eq(profileDoc.docBytesWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -349,6 +397,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     // Clear the profile collection so we can easily identify new operations with similar filters as
@@ -370,6 +422,10 @@ const operations = [
             assert.eq(profileDoc.docBytesWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -388,6 +444,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -407,6 +467,10 @@ const operations = [
             assert.gt(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     resetProfileColl,
@@ -438,6 +502,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -463,6 +531,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 1);
             assert.eq(profileDoc.idxEntryBytesWritten, 3);
             assert.eq(profileDoc.idxEntryUnitsWritten, 1);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -488,6 +560,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 1);
             assert.eq(profileDoc.idxEntryBytesWritten, 3);
             assert.eq(profileDoc.idxEntryUnitsWritten, 1);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -507,6 +583,10 @@ const operations = [
             assert.gt(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     resetProfileColl,
@@ -532,6 +612,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -554,6 +638,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     resetProfileColl,
@@ -576,6 +664,10 @@ const operations = [
             // Deletes one entry and writes another.
             assert.eq(profileDoc.idxEntryBytesWritten, 10);
             assert.eq(profileDoc.idxEntryUnitsWritten, 2);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     resetProfileColl,
@@ -602,6 +694,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 4);
             assert.eq(profileDoc.idxEntryUnitsWritten, 1);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 29);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 1);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -637,6 +733,10 @@ const operations = [
             // Removes one entry and inserts another.
             assert.eq(profileDoc.idxEntryBytesWritten, 11);
             assert.eq(profileDoc.idxEntryUnitsWritten, 2);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -678,6 +778,10 @@ const operations = [
             // Removes one entry and inserts another.
             assert.eq(profileDoc.idxEntryBytesWritten, 10);
             assert.eq(profileDoc.idxEntryUnitsWritten, 2);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -712,6 +816,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 1);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     resetProfileColl,
@@ -735,6 +843,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 1);
             assert.eq(profileDoc.idxEntryBytesWritten, 3);
             assert.eq(profileDoc.idxEntryUnitsWritten, 1);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -755,6 +867,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     resetProfileColl,
@@ -785,6 +901,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 0);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -811,6 +931,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 1);
             assert.eq(profileDoc.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
@@ -837,6 +961,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 1);
             assert.eq(profileDoc.idxEntryBytesWritten, 3);
             assert.eq(profileDoc.idxEntryUnitsWritten, 1);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     resetProfileColl,
@@ -861,6 +989,10 @@ const operations = [
             assert.eq(profileDoc.docUnitsWritten, 100);
             assert.eq(profileDoc.idxEntryBytesWritten, 299);
             assert.eq(profileDoc.idxEntryUnitsWritten, 100);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
 
