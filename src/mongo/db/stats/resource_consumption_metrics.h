@@ -306,6 +306,8 @@ public:
          */
         void incrementOneIdxEntryWritten(size_t idxEntryBytesWritten);
 
+        void incrementOneIdxEntryWritten(OperationContext* opCtx, size_t idxEntryBytesWritten);
+
         /**
          * This should be called once for every document that is written and then rolled back. This
          * is a no-op when metrics collection is disabled on this operation. This function should
@@ -425,6 +427,10 @@ public:
      * Clears the existing CPU time.
      */
     Nanoseconds getAndClearCpuTime();
+
+    void incrementOneIdxEntryWrittenGlobal(size_t bytesWritten,
+                                           size_t indexUnits,
+                                           std::string dbName);
 
 private:
     // Protects _dbMetrics and _cpuTime

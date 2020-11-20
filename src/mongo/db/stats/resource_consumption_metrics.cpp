@@ -244,13 +244,29 @@ void ResourceConsumption::MetricsCollector::incrementOneDocWritten(size_t bytesW
     });
 }
 
-void ResourceConsumption::MetricsCollector::incrementOneIdxEntryWritten(size_t bytesWritten) {
-    _doIfCollecting([&] {
-        size_t idxUnits = std::ceil(bytesWritten / static_cast<float>(gIndexEntryUnitSizeBytes));
-        _metrics.writeMetrics.idxEntryBytesWritten += bytesWritten;
-        _metrics.writeMetrics.idxEntryUnitsWritten += idxUnits;
-    });
-}
+void ResourceConsumption::MetricsCollector::incrementOneIdxEntryWritten(OperationContext* opCtx,
+                                                                        size_t bytesWritten) {
+
+    size_t idxUnits = std::ceil(bytesWritten / static_cast<float>(gIndexEntryUnitSizeBytes));
+    _metrics.writeMetrics.idxEntryBytesWritten += bytesWritten;
+    _metrics.writeMetrics.idxEntryUnitsWritten += idxUnits;
+
+    auto& globalMetrics = ResourceConsumption::get(opCtx);
+    auto dbName = _dbName;
+
+    if (!opCtx->lockState()->inAWriteUnitOfWork()) {
+        return;
+    }
+    opCtx->recoveryUnit()->onCommit(
+        [bytesWritten, idxUnits, dbName, &globalMetrics](boost::optional<Timestamp>) {
+            globalMetrics.incrementOneIdxEntryWrittenGlobal(bytesWritten, idxUnits, dbName);
+        });
+    opCtx->recoveryUnit()->onRollback(
+        [bytesWritten,
+         idxUnits,
+         dbName,
+         &globalMetrics]() { /*global.incrementOneFailedIdxEntryWritten(bytesWritten); */ });
+}  // namespace mongo
 
 void ResourceConsumption::MetricsCollector::incrementOneFailedDocWritten(size_t bytesWritten) {
     _doIfCollecting([&] {
@@ -347,6 +363,8 @@ ResourceConsumption& ResourceConsumption::get(OperationContext* opCtx) {
 void ResourceConsumption::merge(OperationContext* opCtx,
                                 const std::string& dbName,
                                 const OperationMetrics& metrics) {
+    std::cerr << "ARE WE IN THE MERGING OPERATION\n";
+
     invariant(!dbName.empty());
 
     // All metrics over the duration of this operation will be attributed to the current state, even
@@ -396,5 +414,13 @@ Nanoseconds ResourceConsumption::getCpuTime() const {
 Nanoseconds ResourceConsumption::getAndClearCpuTime() {
     stdx::lock_guard<Mutex> lk(_mutex);
     return std::exchange(_cpuTime, {});
+}
+
+void ResourceConsumption::incrementOneIdxEntryWrittenGlobal(size_t bytesWritten,
+                                                            size_t idxUnits,
+                                                            std::string dbName) {
+    std::lock_guard<Mutex> lk(_mutex);
+    _dbMetrics[dbName].writeMetrics.idxEntryBytesWritten += bytesWritten;
+    _dbMetrics[dbName].writeMetrics.idxEntryUnitsWritten += idxUnits;
 }
 }  // namespace mongo

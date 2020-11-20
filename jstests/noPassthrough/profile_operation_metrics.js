@@ -167,6 +167,7 @@ const operations = [
         },
         profileFilter: {op: 'insert', 'command.insert': collName},
         profileAssert: (db, profileDoc) => {
+            print("tojson", tojson(profileDoc));
             // Insert should not perform any reads.
             assert.eq(profileDoc.docBytesRead, 0);
             assert.eq(profileDoc.docUnitsRead, 0);
@@ -745,14 +746,14 @@ const operations = [
             // towards metrics.
             assert.eq(profileDoc.docBytesWritten, 0);
             assert.eq(profileDoc.docUnitsWritten, 0);
-            assert.eq(profileDoc.idxEntryBytesWritten, 0);
-            assert.eq(profileDoc.idxEntryUnitsWritten, 0);
+            assert.eq(profileDoc.idxEntryBytesWritten, 4);
+            assert.eq(profileDoc.idxEntryUnitsWritten, 1);
             assert.eq(profileDoc.keysSorted, 0);
             assert.eq(profileDoc.sorterSpills, 0);
             assert.eq(profileDoc.failedWrites.docBytesWritten, 29);
             assert.eq(profileDoc.failedWrites.docUnitsWritten, 1);
-            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 4);
-            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 1);
+            assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }
     },
     {
