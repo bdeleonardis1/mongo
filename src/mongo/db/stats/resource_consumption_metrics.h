@@ -298,7 +298,7 @@ public:
          * function should not be called when the operation is a write to the oplog. The metrics are
          * only for operations that are not oplog writes.
          */
-        void incrementOneDocWritten(size_t docBytesWritten);
+        void incrementOneDocWritten(OperationContext* opCtx, size_t docBytesWritten);
 
         /**
          * This should be called once per index entry written with the number of bytes written for
@@ -435,6 +435,13 @@ public:
     void incrementOneFailedIdxEntryWrittenGlobal(size_t bytesWritten,
                                                  size_t indexUnits,
                                                  std::string dbName);
+
+    void incrementOneDocWrittenGlobal(size_t bytesWritten, size_t indexUnits, std::string dbName);
+
+    void incrementOneFailedDocWrittenGlobal(size_t bytesWritten,
+                                            size_t indexUnits,
+                                            std::string dbName);
+
 
 private:
     // Protects _dbMetrics and _cpuTime

@@ -743,15 +743,16 @@ const operations = [
             assert.eq(profileDoc.cursorSeeks, 1);
             // Despite failing to insert keys into the unique index, the operation first succeeded
             // in writing to the collection. Even though the operation was rolled-back, this counts
-            // towards metrics.
-            assert.eq(profileDoc.docBytesWritten, 0);
-            assert.eq(profileDoc.docUnitsWritten, 0);
+            // towards the profile metrics (but it will go in the failedWrites for the aggregated
+            // metrics).
+            assert.eq(profileDoc.docBytesWritten, 29);
+            assert.eq(profileDoc.docUnitsWritten, 1);
             assert.eq(profileDoc.idxEntryBytesWritten, 4);
             assert.eq(profileDoc.idxEntryUnitsWritten, 1);
             assert.eq(profileDoc.keysSorted, 0);
             assert.eq(profileDoc.sorterSpills, 0);
-            assert.eq(profileDoc.failedWrites.docBytesWritten, 29);
-            assert.eq(profileDoc.failedWrites.docUnitsWritten, 1);
+            assert.eq(profileDoc.failedWrites.docBytesWritten, 0);
+            assert.eq(profileDoc.failedWrites.docUnitsWritten, 0);
             assert.eq(profileDoc.failedWrites.idxEntryBytesWritten, 0);
             assert.eq(profileDoc.failedWrites.idxEntryUnitsWritten, 0);
         }

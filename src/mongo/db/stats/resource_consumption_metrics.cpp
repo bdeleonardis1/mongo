@@ -236,33 +236,46 @@ void ResourceConsumption::MetricsCollector::incrementDocUnitsReturned(size_t ret
     _doIfCollecting([&]() { _metrics.readMetrics.docUnitsReturned += returned; });
 }
 
-void ResourceConsumption::MetricsCollector::incrementOneDocWritten(size_t bytesWritten) {
+void ResourceConsumption::MetricsCollector::incrementOneDocWritten(OperationContext* opCtx,
+                                                                   size_t bytesWritten) {
     _doIfCollecting([&] {
         size_t docUnits = std::ceil(bytesWritten / static_cast<float>(gDocumentUnitSizeBytes));
         _metrics.writeMetrics.docBytesWritten += bytesWritten;
         _metrics.writeMetrics.docUnitsWritten += docUnits;
+
+        auto& globalMetrics = ResourceConsumption::get(opCtx);
+        auto dbName = _dbName;
+        opCtx->recoveryUnit()->onCommit(
+            [bytesWritten, docUnits, dbName, &globalMetrics](boost::optional<Timestamp>) {
+                globalMetrics.incrementOneDocWrittenGlobal(bytesWritten, docUnits, dbName);
+            });
+        opCtx->recoveryUnit()->onRollback([bytesWritten, docUnits, dbName, &globalMetrics]() {
+            globalMetrics.incrementOneFailedDocWrittenGlobal(bytesWritten, docUnits, dbName);
+        });
     });
 }
 
 void ResourceConsumption::MetricsCollector::incrementOneIdxEntryWritten(OperationContext* opCtx,
                                                                         size_t bytesWritten) {
+    _doIfCollecting([&] {
+        size_t idxUnits = std::ceil(bytesWritten / static_cast<float>(gIndexEntryUnitSizeBytes));
+        _metrics.writeMetrics.idxEntryBytesWritten += bytesWritten;
+        _metrics.writeMetrics.idxEntryUnitsWritten += idxUnits;
 
-    size_t idxUnits = std::ceil(bytesWritten / static_cast<float>(gIndexEntryUnitSizeBytes));
-    _metrics.writeMetrics.idxEntryBytesWritten += bytesWritten;
-    _metrics.writeMetrics.idxEntryUnitsWritten += idxUnits;
+        // TODO: investigate the scenarios that this is necessary, fix them, and remove this
+        if (!opCtx->lockState()->inAWriteUnitOfWork()) {
+            return;
+        }
 
-    auto& globalMetrics = ResourceConsumption::get(opCtx);
-    auto dbName = _dbName;
-
-    if (!opCtx->lockState()->inAWriteUnitOfWork()) {
-        return;
-    }
-    opCtx->recoveryUnit()->onCommit(
-        [bytesWritten, idxUnits, dbName, &globalMetrics](boost::optional<Timestamp>) {
-            globalMetrics.incrementOneIdxEntryWrittenGlobal(bytesWritten, idxUnits, dbName);
+        auto& globalMetrics = ResourceConsumption::get(opCtx);
+        auto dbName = _dbName;
+        opCtx->recoveryUnit()->onCommit(
+            [bytesWritten, idxUnits, dbName, &globalMetrics](boost::optional<Timestamp>) {
+                globalMetrics.incrementOneIdxEntryWrittenGlobal(bytesWritten, idxUnits, dbName);
+            });
+        opCtx->recoveryUnit()->onRollback([bytesWritten, idxUnits, dbName, &globalMetrics]() {
+            globalMetrics.incrementOneFailedIdxEntryWrittenGlobal(bytesWritten, idxUnits, dbName);
         });
-    opCtx->recoveryUnit()->onRollback([bytesWritten, idxUnits, dbName, &globalMetrics]() {
-        globalMetrics.incrementOneFailedIdxEntryWrittenGlobal(bytesWritten, idxUnits, dbName);
     });
 }  // namespace mongo
 
@@ -426,5 +439,21 @@ void ResourceConsumption::incrementOneFailedIdxEntryWrittenGlobal(size_t bytesWr
     std::lock_guard<Mutex> lk(_mutex);
     _dbMetrics[dbName].failedWriteMetrics.idxEntryBytesWritten += bytesWritten;
     _dbMetrics[dbName].failedWriteMetrics.idxEntryUnitsWritten += idxUnits;
+}
+
+void ResourceConsumption::incrementOneDocWrittenGlobal(size_t bytesWritten,
+                                                       size_t idxUnits,
+                                                       std::string dbName) {
+    std::lock_guard<Mutex> lk(_mutex);
+    _dbMetrics[dbName].writeMetrics.docBytesWritten += bytesWritten;
+    _dbMetrics[dbName].writeMetrics.docUnitsWritten += idxUnits;
+}
+
+void ResourceConsumption::incrementOneFailedDocWrittenGlobal(size_t bytesWritten,
+                                                             size_t idxUnits,
+                                                             std::string dbName) {
+    std::lock_guard<Mutex> lk(_mutex);
+    _dbMetrics[dbName].failedWriteMetrics.docBytesWritten += bytesWritten;
+    _dbMetrics[dbName].failedWriteMetrics.docUnitsWritten += idxUnits;
 }
 }  // namespace mongo
