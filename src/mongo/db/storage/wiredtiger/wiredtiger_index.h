@@ -288,7 +288,12 @@ public:
                   const KeyString::Value& keyString,
                   bool dupsAllowed) override;
 };
-
+/**
+ * Add commit and rollback hooks to increment the write metrics or failed write metrics.
+ * Instead of incrementing the document writes in the metrics collector manually, functions
+ * should call this function with the size of the write operation. The caller must be in a
+ * WriteUnitOfWork to call this function.
+ */
 void setupIncrementIndexHooks(OperationContext* opCtx, size_t size);
 
 }  // namespace mongo
