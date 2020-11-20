@@ -167,7 +167,6 @@ const operations = [
         },
         profileFilter: {op: 'insert', 'command.insert': collName},
         profileAssert: (db, profileDoc) => {
-            print("tojson", tojson(profileDoc));
             // Insert should not perform any reads.
             assert.eq(profileDoc.docBytesRead, 0);
             assert.eq(profileDoc.docUnitsRead, 0);
