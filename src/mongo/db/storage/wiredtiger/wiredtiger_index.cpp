@@ -766,7 +766,12 @@ private:
 
         invariantWTOK(wiredTigerCursorInsert(_opCtx, _cursor));
 
-        setupIncrementIndexHooks(_opCtx, keyItem.size);
+        if (_opCtx->lockState()->inAWriteUnitOfWork()) {
+            setupIncrementIndexHooks(_opCtx, keyItem.size);
+        } else {
+            auto& metricsCollector = ResourceConsumption::MetricsCollector::get(_opCtx);
+            metricsCollector.incrementOneIdxEntryWritten(keyItem.size);
+        }
 
         // Don't copy the key again if dups are allowed.
         if (!_dupsAllowed)
