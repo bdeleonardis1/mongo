@@ -669,7 +669,19 @@ public:
 
         invariantWTOK(wiredTigerCursorInsert(_opCtx, _cursor));
 
-        setupIncrementIndexHooks(_opCtx, item.size);
+
+        auto& metricsCollector = ResourceConsumption::MetricsCollector::get(_opCtx);
+        int size = item.size;
+        if (_opCtx->lockState()->inAWriteUnitOfWork()) {
+            _opCtx->recoveryUnit()->onCommit([size, &metricsCollector](boost::optional<Timestamp>) {
+                metricsCollector.incrementOneIdxEntryWritten(size);
+            });
+            _opCtx->recoveryUnit()->onRollback([size, &metricsCollector]() {
+                metricsCollector.incrementOneFailedIdxEntryWritten(size);
+            });
+        } else {
+            metricsCollector.incrementOneIdxEntryWritten(size);
+        }
 
         return Status::OK();
     }
@@ -759,7 +771,14 @@ private:
 
         invariantWTOK(wiredTigerCursorInsert(_opCtx, _cursor));
 
-        setupIncrementIndexHooks(_opCtx, keyItem.size);
+        int size = keyItem.size;
+        auto& metricsCollector = ResourceConsumption::MetricsCollector::get(_opCtx);
+        _opCtx->recoveryUnit()->onCommit([size, &metricsCollector](boost::optional<Timestamp>) {
+            metricsCollector.incrementOneIdxEntryWritten(size);
+        });
+        _opCtx->recoveryUnit()->onRollback([size, &metricsCollector]() {
+            metricsCollector.incrementOneFailedIdxEntryWritten(size);
+        });
 
         // Don't copy the key again if dups are allowed.
         if (!_dupsAllowed)
@@ -824,7 +843,14 @@ private:
         _cursor->set_value(_cursor, valueItem.Get());
 
         invariantWTOK(wiredTigerCursorInsert(_opCtx, _cursor));
-        setupIncrementIndexHooks(_opCtx, keyItem.size);
+        int size = keyItem.size;
+        auto& metricsCollector = ResourceConsumption::MetricsCollector::get(_opCtx);
+        _opCtx->recoveryUnit()->onCommit([size, &metricsCollector](boost::optional<Timestamp>) {
+            metricsCollector.incrementOneIdxEntryWritten(size);
+        });
+        _opCtx->recoveryUnit()->onRollback([size, &metricsCollector]() {
+            metricsCollector.incrementOneFailedIdxEntryWritten(size);
+        });
 
         _records.clear();
     }
@@ -1543,7 +1569,13 @@ Status WiredTigerIndexUnique::_insertTimestampUnsafe(OperationContext* opCtx,
 
     // Account for the first insert attempt, but do not attempt to account for the complexity of
     // any subsequent writes.
-    setupIncrementIndexHooks(opCtx, keyItem.size);
+    int size = keyItem.size;
+    auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+    opCtx->recoveryUnit()->onCommit([size, &metricsCollector](boost::optional<Timestamp>) {
+        metricsCollector.incrementOneIdxEntryWritten(size);
+    });
+    opCtx->recoveryUnit()->onRollback(
+        [size, &metricsCollector]() { metricsCollector.incrementOneFailedIdxEntryWritten(size); });
 
     if (ret != WT_DUPLICATE_KEY) {
         if (ret == 0) {
@@ -1560,7 +1592,6 @@ Status WiredTigerIndexUnique::_insertTimestampUnsafe(OperationContext* opCtx,
     ret = wiredTigerPrepareConflictRetry(opCtx, [&] { return c->search(c); });
     invariantWTOK(ret);
 
-    auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
     metricsCollector.incrementOneCursorSeek();
 
     WT_ITEM old;
@@ -1677,7 +1708,13 @@ Status WiredTigerIndexUnique::_insertTimestampSafe(OperationContext* opCtx,
 
     // Account for the actual key insertion, but do not attempt account for the complexity of any
     // previous duplicate key detection, which may perform writes.
-    setupIncrementIndexHooks(opCtx, keyItem.size);
+    int size = keyItem.size;
+    auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+    opCtx->recoveryUnit()->onCommit([size, &metricsCollector](boost::optional<Timestamp>) {
+        metricsCollector.incrementOneIdxEntryWritten(size);
+    });
+    opCtx->recoveryUnit()->onRollback(
+        [size, &metricsCollector]() { metricsCollector.incrementOneFailedIdxEntryWritten(size); });
 
     // It is possible that this key is already present during a concurrent background index build.
     if (ret != WT_DUPLICATE_KEY)
@@ -1748,7 +1785,19 @@ void WiredTigerIndexUnique::_unindexTimestampUnsafe(OperationContext* opCtx,
 
         // Only account for the actual key removal, but do not attempt account for the complexity
         // of any previous or subsequent writes.
-        setupIncrementIndexHooks(opCtx, keyItem.size);
+        int size = keyItem.size;
+        auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+        if (opCtx->lockState()->inAWriteUnitOfWork()) {
+            opCtx->recoveryUnit()->onCommit([size, &metricsCollector](boost::optional<Timestamp>) {
+                metricsCollector.incrementOneIdxEntryWritten(size);
+            });
+            opCtx->recoveryUnit()->onRollback([size, &metricsCollector]() {
+                metricsCollector.incrementOneFailedIdxEntryWritten(size);
+            });
+        } else {
+            metricsCollector.incrementOneIdxEntryWritten(size);
+        }
+
 
         if (ret == WT_NOTFOUND) {
             triggerWriteConflictAtPoint(c);
@@ -1837,7 +1886,13 @@ void WiredTigerIndexUnique::_unindexTimestampSafe(OperationContext* opCtx,
 
     // Account for the first removal attempt, but do not attempt to account for the complexity of
     // any subsequent removals and insertions when the index's keys are not fully-upgraded.
-    setupIncrementIndexHooks(opCtx, item.size);
+    int size = item.size;
+    auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+    opCtx->recoveryUnit()->onCommit([size, &metricsCollector](boost::optional<Timestamp>) {
+        metricsCollector.incrementOneIdxEntryWritten(size);
+    });
+    opCtx->recoveryUnit()->onRollback(
+        [size, &metricsCollector]() { metricsCollector.incrementOneFailedIdxEntryWritten(size); });
 
     if (ret != WT_NOTFOUND) {
         invariantWTOK(ret);
@@ -1906,7 +1961,13 @@ Status WiredTigerIndexStandard::_insert(OperationContext* opCtx,
     c->set_value(c, valueItem.Get());
     int ret = WT_OP_CHECK(wiredTigerCursorInsert(opCtx, c));
 
-    setupIncrementIndexHooks(opCtx, keyItem.size);
+    int size = keyItem.size;
+    auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+    opCtx->recoveryUnit()->onCommit([size, &metricsCollector](boost::optional<Timestamp>) {
+        metricsCollector.incrementOneIdxEntryWritten(size);
+    });
+    opCtx->recoveryUnit()->onRollback(
+        [size, &metricsCollector]() { metricsCollector.incrementOneFailedIdxEntryWritten(size); });
 
     // If the record was already in the index, we just return OK.
     // This can happen, for example, when building a background index while documents are being
@@ -1926,7 +1987,13 @@ void WiredTigerIndexStandard::_unindex(OperationContext* opCtx,
     setKey(c, item.Get());
     int ret = WT_OP_CHECK(wiredTigerCursorRemove(opCtx, c));
 
-    setupIncrementIndexHooks(opCtx, item.size);
+    int size = item.size;
+    auto& metricsCollector = ResourceConsumption::MetricsCollector::get(opCtx);
+    opCtx->recoveryUnit()->onCommit([size, &metricsCollector](boost::optional<Timestamp>) {
+        metricsCollector.incrementOneIdxEntryWritten(size);
+    });
+    opCtx->recoveryUnit()->onRollback(
+        [size, &metricsCollector]() { metricsCollector.incrementOneFailedIdxEntryWritten(size); });
 
     if (ret != WT_NOTFOUND) {
         invariantWTOK(ret);
