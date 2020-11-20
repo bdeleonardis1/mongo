@@ -279,22 +279,6 @@ void ResourceConsumption::MetricsCollector::incrementOneIdxEntryWritten(Operatio
     });
 }  // namespace mongo
 
-void ResourceConsumption::MetricsCollector::incrementOneFailedDocWritten(size_t bytesWritten) {
-    _doIfCollecting([&] {
-        size_t docUnits = std::ceil(bytesWritten / static_cast<float>(gDocumentUnitSizeBytes));
-        _metrics.failedWriteMetrics.docBytesWritten += bytesWritten;
-        _metrics.failedWriteMetrics.docUnitsWritten += docUnits;
-    });
-}
-
-void ResourceConsumption::MetricsCollector::incrementOneFailedIdxEntryWritten(size_t bytesWritten) {
-    _doIfCollecting([&] {
-        size_t idxUnits = std::ceil(bytesWritten / static_cast<float>(gIndexEntryUnitSizeBytes));
-        _metrics.failedWriteMetrics.idxEntryBytesWritten += bytesWritten;
-        _metrics.failedWriteMetrics.idxEntryUnitsWritten += idxUnits;
-    });
-}
-
 void ResourceConsumption::MetricsCollector::beginScopedCollecting(OperationContext* opCtx,
                                                                   const std::string& dbName) {
     invariant(!isInScope());
@@ -391,11 +375,11 @@ void ResourceConsumption::merge(OperationContext* opCtx,
     } else {
         newMetrics.secondaryReadMetrics = metrics.readMetrics;
     }
-    newMetrics.writeMetrics = metrics.writeMetrics;
     if (metrics.cpuTimer) {
         newMetrics.cpuNanos = metrics.cpuTimer->getElapsed();
     }
-    newMetrics.failedWriteMetrics = metrics.failedWriteMetrics;
+    // The write metrics do not get merged because they are added to the global metrics at the same
+    // time they are added to the metricsCollector.
 
     // Add all metrics into the the globally-aggregated metrics.
     stdx::lock_guard<Mutex> lk(_mutex);

@@ -309,22 +309,6 @@ public:
         void incrementOneIdxEntryWritten(OperationContext* opCtx, size_t idxEntryBytesWritten);
 
         /**
-         * This should be called once for every document that is written and then rolled back. This
-         * is a no-op when metrics collection is disabled on this operation. This function should
-         * not be called if the operation fails, it should only be called if the write goes through
-         * and is then rolled back.
-         */
-        void incrementOneFailedDocWritten(size_t docBytesWritten);
-
-        /**
-         * This should be called once for every index entry that is written and then rolled back.
-         * This is a no-op when metrics collection is disabled on this operation. This function
-         * should not be called if the operation fails, it should only be called if the write goes
-         * through and is then rolled back.
-         */
-        void incrementOneFailedIdxEntryWritten(size_t idxEntryBytesWritten);
-
-        /**
          * This should be called once every time the storage engine successfully does a cursor seek.
          * Note that if it takes multiple attempts to do a successful seek, this function should
          * only be called once. If the seek does not find anything, this function should not be
