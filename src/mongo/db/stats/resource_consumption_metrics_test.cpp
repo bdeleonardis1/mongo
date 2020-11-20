@@ -646,5 +646,4 @@ TEST_F(ResourceConsumptionMetricsTest, CursorSeeks) {
     auto metricsCopy = globalResourceConsumption.getDbMetrics();
     ASSERT_EQ(metricsCopy["db1"].primaryReadMetrics.cursorSeeks, expectedSeeks);
 }
-
 }  // namespace mongo
