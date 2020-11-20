@@ -432,6 +432,10 @@ public:
                                            size_t indexUnits,
                                            std::string dbName);
 
+    void incrementOneFailedIdxEntryWrittenGlobal(size_t bytesWritten,
+                                                 size_t indexUnits,
+                                                 std::string dbName);
+
 private:
     // Protects _dbMetrics and _cpuTime
     mutable Mutex _mutex = MONGO_MAKE_LATCH("ResourceConsumption::_mutex");

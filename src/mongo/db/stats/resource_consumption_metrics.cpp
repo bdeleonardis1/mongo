@@ -261,11 +261,9 @@ void ResourceConsumption::MetricsCollector::incrementOneIdxEntryWritten(Operatio
         [bytesWritten, idxUnits, dbName, &globalMetrics](boost::optional<Timestamp>) {
             globalMetrics.incrementOneIdxEntryWrittenGlobal(bytesWritten, idxUnits, dbName);
         });
-    opCtx->recoveryUnit()->onRollback(
-        [bytesWritten,
-         idxUnits,
-         dbName,
-         &globalMetrics]() { /*global.incrementOneFailedIdxEntryWritten(bytesWritten); */ });
+    opCtx->recoveryUnit()->onRollback([bytesWritten, idxUnits, dbName, &globalMetrics]() {
+        globalMetrics.incrementOneFailedIdxEntryWrittenGlobal(bytesWritten, idxUnits, dbName);
+    });
 }  // namespace mongo
 
 void ResourceConsumption::MetricsCollector::incrementOneFailedDocWritten(size_t bytesWritten) {
@@ -363,8 +361,6 @@ ResourceConsumption& ResourceConsumption::get(OperationContext* opCtx) {
 void ResourceConsumption::merge(OperationContext* opCtx,
                                 const std::string& dbName,
                                 const OperationMetrics& metrics) {
-    std::cerr << "ARE WE IN THE MERGING OPERATION\n";
-
     invariant(!dbName.empty());
 
     // All metrics over the duration of this operation will be attributed to the current state, even
@@ -422,5 +418,13 @@ void ResourceConsumption::incrementOneIdxEntryWrittenGlobal(size_t bytesWritten,
     std::lock_guard<Mutex> lk(_mutex);
     _dbMetrics[dbName].writeMetrics.idxEntryBytesWritten += bytesWritten;
     _dbMetrics[dbName].writeMetrics.idxEntryUnitsWritten += idxUnits;
+}
+
+void ResourceConsumption::incrementOneFailedIdxEntryWrittenGlobal(size_t bytesWritten,
+                                                                  size_t idxUnits,
+                                                                  std::string dbName) {
+    std::lock_guard<Mutex> lk(_mutex);
+    _dbMetrics[dbName].failedWriteMetrics.idxEntryBytesWritten += bytesWritten;
+    _dbMetrics[dbName].failedWriteMetrics.idxEntryUnitsWritten += idxUnits;
 }
 }  // namespace mongo
