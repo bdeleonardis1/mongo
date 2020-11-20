@@ -277,7 +277,7 @@ void ResourceConsumption::MetricsCollector::incrementOneIdxEntryWritten(Operatio
             globalMetrics.incrementOneFailedIdxEntryWrittenGlobal(bytesWritten, idxUnits, dbName);
         });
     });
-}  // namespace mongo
+}
 
 void ResourceConsumption::MetricsCollector::beginScopedCollecting(OperationContext* opCtx,
                                                                   const std::string& dbName) {
